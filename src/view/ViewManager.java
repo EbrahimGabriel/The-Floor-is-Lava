@@ -147,7 +147,7 @@ public class ViewManager {
 	private GameButton createPlayButton() {
 		GameButton playButton = new GameButton("Play");
 		playButton.setLayoutX(100);
-		playButton.setLayoutY(100);
+		playButton.setLayoutY(200);
 		return playButton;
 	}
 
@@ -158,7 +158,7 @@ public class ViewManager {
 		startButton.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(ActionEvent event) {
-				showSubScene(playSubScene);
+				showSubScene(characterSelectSubScene);
 			}
 		});
 	}

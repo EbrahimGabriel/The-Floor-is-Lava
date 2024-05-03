@@ -10,7 +10,6 @@ public class CharacterSelect extends VBox {
 	private ImageView circleImage;
 	private ImageView characterImage;
 
-	//missing images
 	private String circleNotChosen = "view/resources/characters/grey_circle.png";
 	private String circleChosen = "view/resources/characters/chosen_circle.png";
 

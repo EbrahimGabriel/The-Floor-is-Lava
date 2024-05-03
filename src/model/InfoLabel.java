@@ -15,7 +15,7 @@ import javafx.scene.text.Font;
 
 public class InfoLabel extends Label {
 	public final static String FONT_PATH = "src/model/resources/rainyhearts.ttf";
-	public final static String BACKGROUND_IMAGE = "view/resources/label_panel.png"; //missing
+	public final static String BACKGROUND_IMAGE = "view/resources/label_panel.png";
 
 	public InfoLabel(String text) {
 		setPrefWidth(380);
