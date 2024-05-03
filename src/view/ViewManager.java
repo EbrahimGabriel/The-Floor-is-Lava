@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
+import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.image.Image;
@@ -14,9 +15,13 @@ import javafx.scene.layout.Background;
 import javafx.scene.layout.BackgroundImage;
 import javafx.scene.layout.BackgroundPosition;
 import javafx.scene.layout.BackgroundRepeat;
+import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
+import model.CHARACTER;
+import model.CharacterSelect;
 import model.GameButton;
 import model.GameSubScene;
+import model.InfoLabel;
 
 public class ViewManager {
 
@@ -31,12 +36,16 @@ public class ViewManager {
 	private final static int MENU_BUTTON_START_Y = 150;
 
 	private GameSubScene playSubScene;
+	private GameSubScene characterSelectSubScene;
 	private GameSubScene helpSubScene;
 	private GameSubScene creditsSubScene;
 
 	private GameSubScene sceneToHide;
 
 	List<GameButton> menuButtons;
+
+	List<CharacterSelect> characterList;
+	private CHARACTER chosenCharacter;
 
 	public ViewManager() {
 		menuButtons = new ArrayList<>();
@@ -67,14 +76,56 @@ public class ViewManager {
 	}
 
 	private void createSubScenes() {
-		creditsSubScene = new GameSubScene();
-		mainPane.getChildren().add(creditsSubScene);
+
+		playSubScene = new GameSubScene();
+		mainPane.getChildren().add(playSubScene);
+
+		createCharacterSelectSubScene();
 
 		helpSubScene = new GameSubScene();
 		mainPane.getChildren().add(helpSubScene);
 
-		playSubScene = new GameSubScene();
-		mainPane.getChildren().add(playSubScene);
+		creditsSubScene = new GameSubScene();
+		mainPane.getChildren().add(creditsSubScene);
+
+	}
+
+	private void createCharacterSelectSubScene() {
+		characterSelectSubScene = new GameSubScene();
+		mainPane.getChildren().add(characterSelectSubScene);
+
+		InfoLabel chooseCharacterLabel = new InfoLabel("Choose your character");
+		chooseCharacterLabel.setLayoutY(110);
+		chooseCharacterLabel.setLayoutY(25);
+		characterSelectSubScene.getPane().getChildren().add(chooseCharacterLabel);
+		characterSelectSubScene.getPane().getChildren().add(createCharactersToSelect());
+		characterSelectSubScene.getPane().getChildren().add(createPlayButton());
+
+	}
+
+	private HBox createCharactersToSelect() {
+		HBox box = new HBox();
+		box.setSpacing(20);
+		characterList = new ArrayList<>();
+		for (CHARACTER character: CHARACTER.values()) {
+			CharacterSelect characterToPick = new CharacterSelect(character);
+			characterList.add(characterToPick);
+			box.getChildren().add(characterToPick);
+
+			characterToPick.setOnMouseClicked(new EventHandler<MouseEvent>() {
+				@Override
+				public void handle(MouseEvent event) {
+					for (CharacterSelect character: characterList) {
+						character.setIsCharacterChosen(false);
+					}
+					characterToPick.setIsCharacterChosen(true);
+					chosenCharacter = characterToPick.getCharacter();
+				}
+			});
+		}
+		box.setLayoutX(300 - (110*2));
+		box.setLayoutY(100);
+		return box;
 	}
 	// ------
 
@@ -91,6 +142,13 @@ public class ViewManager {
 		createHelpButton();
 		createCreditsButton();
 		createExitButton();
+	}
+
+	private GameButton createPlayButton() {
+		GameButton playButton = new GameButton("Play");
+		playButton.setLayoutX(100);
+		playButton.setLayoutY(100);
+		return playButton;
 	}
 
 	private void createStartButton() {
@@ -150,7 +208,7 @@ public class ViewManager {
 	}
 
 	private void createTitle() {
-		ImageView title = new ImageView("view/resources/background.jpg");
+		ImageView title = new ImageView("view/resources/background.jpg"); //missing image
 		title.setLayoutX(400);
 		title.setLayoutY(50);
 

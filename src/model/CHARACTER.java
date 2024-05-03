@@ -6,9 +6,13 @@ public enum CHARACTER {
 	YELLOW("view/resources/characters/yellow.png"),
 	GREEN("view/resources/characters/green.png");
 
-	String urlCharacter;
+	private String urlCharacter;
 
 	private CHARACTER(String urlCharacter) {
 		this.urlCharacter = urlCharacter;
+	}
+
+	public String getUrl() {
+		return this.urlCharacter;
 	}
 }
