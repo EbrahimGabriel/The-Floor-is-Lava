@@ -1,5 +1,7 @@
 package view;
 
+import java.util.Random;
+
 import javafx.animation.AnimationTimer;
 import javafx.event.EventHandler;
 import javafx.scene.Scene;
@@ -41,10 +43,16 @@ public class GameViewManager {
 	private Label chatLog;
 	//--------------------
 	private final static String BACKGROUND_IMAGE = "view/resources/background.jpg";
+	private final static String LAVA_TILE = "view/resources/lava.png";
+
+	private ImageView[] lavaTiles;
+	Random randomPositionGenerator;
+
 
 	public GameViewManager() {
 		initializeStage();
 		createKeyListeners();
+		randomPositionGenerator = new Random();
 	}
 
 	private void createKeyListeners() {
@@ -109,8 +117,24 @@ public class GameViewManager {
 		createBackground();
 		createChat();
 		createCharacter(chosenCharacter);
+		createGameElements();
 		createGameLoop();
 		gameStage.show();
+	}
+
+	private void createGameElements() {
+		lavaTiles = new ImageView[3];
+		for (int i = 0; i < lavaTiles.length; i++) {
+			lavaTiles[i] = new ImageView(LAVA_TILE);
+			setGameElementPosition(lavaTiles[i]);
+			gamePane.getChildren().add(lavaTiles[i]);
+
+		}
+	}
+
+	private void setGameElementPosition(ImageView image) {
+		image.setLayoutX(randomPositionGenerator.nextInt(700));
+		image.setLayoutY(randomPositionGenerator.nextInt(500));
 	}
 
 	private void createCharacter(CHARACTER chosenCharacter) {
