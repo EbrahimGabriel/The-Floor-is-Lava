@@ -3,6 +3,8 @@ package view;
 import javafx.animation.AnimationTimer;
 import javafx.event.EventHandler;
 import javafx.scene.Scene;
+import javafx.scene.control.Label;
+import javafx.scene.control.TextField;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
@@ -33,6 +35,11 @@ public class GameViewManager {
 
 	private GridPane gridPane1;
 	private GridPane gridPane2;
+	//--- chat related ---
+	private GridPane chatPane;
+	private TextField chatInput;
+	private Label chatLog;
+	//--------------------
 	private final static String BACKGROUND_IMAGE = "view/resources/background.jpg";
 
 	public GameViewManager() {
@@ -56,9 +63,17 @@ public class GameViewManager {
 					isRightPressed = true;
 				}
 
-				// open chat
+				// open or close chat
 				if (event.getCode() == KeyCode.SLASH) {
 					chatVisible = !chatVisible;
+					chatPane.setVisible(!chatPane.isVisible());
+					chatInput.requestFocus();
+				}
+
+				if (event.getCode() == KeyCode.ENTER && chatVisible) {
+					String message = chatInput.getText();
+					chatLog.setText(chatLog.getText() + "\n" + message);
+					gamePane.requestFocus();
 				}
 			}
 		});
@@ -92,6 +107,7 @@ public class GameViewManager {
 		this.menuStage = menuStage;
 		this.menuStage.hide();
 		createBackground();
+		createChat();
 		createCharacter(chosenCharacter);
 		createGameLoop();
 		gameStage.show();
@@ -149,5 +165,17 @@ public class GameViewManager {
 
 		gridPane2.setLayoutY(-1024);
 		gamePane.getChildren().addAll(gridPane1, gridPane2);
+	}
+
+	//will probably move to scene before game starts rather than during in-game?
+	private void createChat() {
+		chatPane = new GridPane();
+		chatInput = new TextField();
+		chatLog = new Label();
+		chatPane.getChildren().addAll(chatLog, chatInput);
+		chatPane.setLayoutX(0);
+		chatPane.setLayoutY(0);
+		chatPane.setVisible(false);
+		gamePane.getChildren().add(chatPane);
 	}
 }
