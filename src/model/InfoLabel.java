@@ -12,7 +12,7 @@ import javafx.scene.layout.BackgroundImage;
 import javafx.scene.layout.BackgroundPosition;
 import javafx.scene.layout.BackgroundRepeat;
 import javafx.scene.text.Font;
-
+//this is a component for a basic design of a label in the game
 public class InfoLabel extends Label {
 	public final static String FONT_PATH = "src/model/resources/rainyhearts.ttf";
 	public final static String BACKGROUND_IMAGE = "view/resources/label_panel.png";

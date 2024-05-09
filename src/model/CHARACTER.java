@@ -1,5 +1,5 @@
 package model;
-
+// holds information about player characters
 public enum CHARACTER {
 	BLUE("view/resources/characters/blue.png"),
 	RED("view/resources/characters/red.png"),

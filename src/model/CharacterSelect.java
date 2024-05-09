@@ -4,7 +4,7 @@ import javafx.geometry.Pos;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.VBox;
-
+// this is the component for selecting a character (one character per this component)
 public class CharacterSelect extends VBox {
 
 	private ImageView circleImage;

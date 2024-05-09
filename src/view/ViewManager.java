@@ -22,7 +22,7 @@ import model.CharacterSelect;
 import model.GameButton;
 import model.GameSubScene;
 import model.InfoLabel;
-
+//this is the view for the main menu and others
 public class ViewManager {
 
 	private static final int HEIGHT = 500;
@@ -148,6 +148,16 @@ public class ViewManager {
 		GameButton playButton = new GameButton("Play");
 		playButton.setLayoutX(100);
 		playButton.setLayoutY(200);
+
+		playButton.setOnAction(new EventHandler<ActionEvent>() {
+			@Override
+			public void handle(ActionEvent event) {
+				if (chosenCharacter != null) {
+					GameViewManager gameManager = new GameViewManager();
+					gameManager.createNewGame(mainStage, chosenCharacter);
+				}
+			}
+		});
 		return playButton;
 	}
 

@@ -9,7 +9,7 @@ import javafx.scene.effect.DropShadow;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.text.Font;
-
+// this is a component for a button; contains the basic design for every button in the game
 public class GameButton extends Button {
 
 	private final String FONT_PATH = "src/model/resources/rainyhearts.ttf";

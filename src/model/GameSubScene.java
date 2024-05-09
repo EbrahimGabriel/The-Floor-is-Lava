@@ -13,7 +13,7 @@ import javafx.util.Duration;
 //remove later
 import javafx.scene.text.Text;
 //---
-
+// this is the component that shows up when you click a button on the menu
 public class GameSubScene extends SubScene {
 
 	private final String FONT_PATH = "src/model/resources/rainyhearts.ttf";
