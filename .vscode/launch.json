@@ -1,0 +1,13 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "java",
+            "name": "Debug (Launch)",
+            "request": "launch",
+            "mainClass": "application.Main",
+            "vmArgs": "--module-path lib --add-modules javafx.controls,javafx.fxml",
+            "projectName": "lava_game"
+        }
+    ]
+}
