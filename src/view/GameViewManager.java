@@ -14,6 +14,7 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
 import model.CHARACTER;
+import model.SmallInfoLabel;
 //this is the main view for the gameplay loop
 public class GameViewManager {
 	//base stuff for the screen
@@ -47,6 +48,11 @@ public class GameViewManager {
 
 	private ImageView[] lavaTiles;
 	Random randomPositionGenerator;
+
+	private SmallInfoLabel pointsLabel;
+	private ImageView[] playerLives;
+	private int playerLife;
+	private int points;	
 
 
 	public GameViewManager() {
@@ -117,18 +123,33 @@ public class GameViewManager {
 		createBackground();
 		createChat();
 		createCharacter(chosenCharacter);
-		createGameElements();
+		createGameElements(chosenCharacter);
 		createGameLoop();
 		gameStage.show();
 	}
 
-	private void createGameElements() {
+	private void createGameElements(CHARACTER chosenCharacter) {
+		playerLife = 2;
+		pointsLabel = new SmallInfoLabel("Points : 00");
+		pointsLabel.setLayoutX(460);
+		pointsLabel.setLayoutY(20);
+		gamePane.getChildren().add(pointsLabel);
+		playerLives = new ImageView[3];
+	
+		for(int i = 0; i < playerLives.length; i++) {
+			playerLives[i] = new ImageView(chosenCharacter.getUrlLife());
+			playerLives[i].setFitWidth(30);  // set width to 30 pixels
+			playerLives[i].setFitHeight(30); // set height to 30 pixels
+			playerLives[i].setLayoutX(455 + (i * 50));
+			playerLives[i].setLayoutY(80);
+			gamePane.getChildren().add(playerLives[i]);
+		}
+	
 		lavaTiles = new ImageView[3];
 		for (int i = 0; i < lavaTiles.length; i++) {
 			lavaTiles[i] = new ImageView(LAVA_TILE);
 			setGameElementPosition(lavaTiles[i]);
 			gamePane.getChildren().add(lavaTiles[i]);
-
 		}
 	}
 
