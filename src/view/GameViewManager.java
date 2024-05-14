@@ -14,6 +14,7 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
 import model.CHARACTER;
+import model.SmallInfoLabel;
 //this is the main view for the gameplay loop
 public class GameViewManager {
 	//base stuff for the screen
@@ -47,6 +48,11 @@ public class GameViewManager {
 
 	private ImageView[] lavaTiles;
 	Random randomPositionGenerator;
+
+	// private SmallInfoLabel pointsLabel;
+	private ImageView[] playerLives;
+	private int playerLife;
+	// private int points;	
 
 
 	public GameViewManager() {
@@ -117,18 +123,33 @@ public class GameViewManager {
 		createBackground();
 		createChat();
 		createCharacter(chosenCharacter);
-		createGameElements();
+		createGameElements(chosenCharacter);
 		createGameLoop();
 		gameStage.show();
 	}
 
-	private void createGameElements() {
+	private void createGameElements(CHARACTER chosenCharacter) {
+		playerLife = 3;
+		// pointsLabel = new SmallInfoLabel("Points : 00");
+		// pointsLabel.setLayoutX(460);
+		// pointsLabel.setLayoutY(20);
+		// gamePane.getChildren().add(pointsLabel);
+		playerLives = new ImageView[3];
+	
+		for(int i = 0; i < playerLives.length; i++) {
+			playerLives[i] = new ImageView(chosenCharacter.getUrlLife());
+			playerLives[i].setFitWidth(30);  // set width to 30 pixels
+			playerLives[i].setFitHeight(30); // set height to 30 pixels
+			playerLives[i].setLayoutX(455 + (i * 50));
+			playerLives[i].setLayoutY(80);
+			gamePane.getChildren().add(playerLives[i]);
+		}
+	
 		lavaTiles = new ImageView[3];
 		for (int i = 0; i < lavaTiles.length; i++) {
 			lavaTiles[i] = new ImageView(LAVA_TILE);
 			setGameElementPosition(lavaTiles[i]);
 			gamePane.getChildren().add(lavaTiles[i]);
-
 		}
 	}
 
@@ -149,6 +170,7 @@ public class GameViewManager {
 			@Override
 			public void handle(long now) {
 				moveCharacter();
+				checkIfElementsCollide();
 			}
 		};
 
@@ -201,5 +223,37 @@ public class GameViewManager {
 		chatPane.setLayoutY(0);
 		chatPane.setVisible(false);
 		gamePane.getChildren().add(chatPane);
+	}
+
+	private void removeLife() {
+		
+		playerLife--;
+		gamePane.getChildren().remove(playerLives[playerLife]);
+		if(playerLife <= 0) {
+			gameStage.close();
+			gameTimer.stop();
+			menuStage.show();
+		}
+	}
+
+	private void checkIfElementsCollide() {
+		// if (ship.getBoundsInParent().intersects(star.getBoundsInParent())) {
+		// 	setNewElementPosition(star);
+		// 	points++;
+		// 	String textToSet = "POINTS : ";
+		// 	if (points < 10) {
+		// 		textToSet = textToSet + "0";
+		// 	}
+		// 	pointsLabel.setText(textToSet + points);
+		// }
+	
+		for (int i = 0; i < lavaTiles.length; i++) {
+			if (character.getBoundsInParent().intersects(lavaTiles[i].getBoundsInParent())) {
+				removeLife();
+				setGameElementPosition(lavaTiles[i]);
+			}
+		}
+	
+		
 	}
 }
