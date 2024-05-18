@@ -28,15 +28,15 @@ import javafx.scene.text.Font;
 public class ViewManager {
     // private static final String[] BUTTON_TEXTS = { "START GAME", "MULTIPLAYER", "QUIT" };
     // private static final String FOOTER_TEXT = "CMSC 137 B-4L GROUP 5";
-    private static final int HEIGHT = 600;
-    private static final int WIDTH = 1000;
+    private static final int HEIGHT = 540;
+    private static final int WIDTH = 960;
 
     private AnchorPane mainPane;
     private Scene mainScene;
     private Stage mainStage;
 
-    private final static int MENU_BUTTON_START_X = 50;
-    private final static int MENU_BUTTON_START_Y = 240;
+    private final static int MENU_BUTTON_START_X = 700;
+    private final static int MENU_BUTTON_START_Y = 140;
 
     private final String FONT_PATH = "model/resources/rainyhearts.ttf";
 
@@ -62,7 +62,7 @@ public class ViewManager {
 
         createBackground();
         createSubScenes();
-        createBackgroundBehindButtons();
+        // createBackgroundBehindButtons();
         createButtons();
         
         
@@ -215,7 +215,7 @@ public class ViewManager {
 
     private void createBackground() {
         try {
-            String imageUrl = "/view/resources/background_1.gif";
+            String imageUrl = "/view/resources/bg_2.png";
             Image backgroundImage = new Image(imageUrl);
     
             // Check if the image loading was successful
@@ -225,6 +225,9 @@ public class ViewManager {
     
             // Create and configure the ImageView for the background image
             ImageView backgroundImageView = new ImageView(backgroundImage);
+            // backgroundImageView.setPreserveRatio(true);
+            // backgroundImageView.setSmooth(false);
+            // backgroundImageView.setCache(false);
             backgroundImageView.fitWidthProperty().bind(mainPane.widthProperty());
             backgroundImageView.fitHeightProperty().bind(mainPane.heightProperty());
     
