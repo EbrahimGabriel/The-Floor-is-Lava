@@ -4,36 +4,33 @@ import java.util.ArrayList;
 import java.util.List;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
-import javafx.scene.Node;
 import javafx.scene.Scene;
-import javafx.scene.effect.DropShadow;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.Background;
-import javafx.scene.layout.BackgroundImage;
-import javafx.scene.layout.BackgroundPosition;
-import javafx.scene.layout.BackgroundRepeat;
 import javafx.scene.layout.HBox;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Rectangle;
 import javafx.stage.Stage;
 import model.CHARACTER;
 import model.CharacterSelect;
 import model.GameButton;
 import model.GameSubScene;
 import model.InfoLabel;
-//this is the view for the main menu and others
-public class ViewManager {
 
-    private static final int HEIGHT = 500;
-    private static final int WIDTH = 700;
+public class ViewManager {
+    // private static final String[] BUTTON_TEXTS = { "START GAME", "MULTIPLAYER", "QUIT" };
+    // private static final String FOOTER_TEXT = "CMSC 137 B-4L GROUP 5";
+    private static final int HEIGHT = 600;
+    private static final int WIDTH = 1000;
 
     private AnchorPane mainPane;
     private Scene mainScene;
     private Stage mainStage;
 
-    private final static int MENU_BUTTON_START_X = 100;
-    private final static int MENU_BUTTON_START_Y = 150;
+    private final static int MENU_BUTTON_START_X = 50;
+    private final static int MENU_BUTTON_START_Y = 230;
 
     private GameSubScene playSubScene;
     private GameSubScene characterSelectSubScene;
@@ -53,10 +50,14 @@ public class ViewManager {
         mainScene = new Scene(mainPane,WIDTH,HEIGHT);
         mainStage = new Stage();
         mainStage.setScene(mainScene);
+        mainStage.setResizable(false);
 
         createBackground();
         createSubScenes();
+        createBackgroundBehindButtons();
         createButtons();
+        
+        
     }
 
     public Stage getMainStage() {
@@ -127,7 +128,7 @@ public class ViewManager {
 
     private void addMenuButton(GameButton button) {
         button.setLayoutX(MENU_BUTTON_START_X);
-        button.setLayoutY(MENU_BUTTON_START_Y + menuButtons.size() * 100);
+        button.setLayoutY(MENU_BUTTON_START_Y + menuButtons.size() * 70);
         menuButtons.add(button);
         mainPane.getChildren().add(button);
     }
@@ -205,9 +206,33 @@ public class ViewManager {
     }
 
     private void createBackground() {
-        ImageView backgroundImage = new ImageView(new Image("view/resources/background_1.gif"));
-        backgroundImage.fitWidthProperty().bind(mainPane.widthProperty());
-        backgroundImage.fitHeightProperty().bind(mainPane.heightProperty());
-        mainPane.getChildren().add(backgroundImage);
+        try {
+            String imageUrl = "/view/resources/background_1.gif";
+            Image backgroundImage = new Image(imageUrl);
+    
+            // Check if the image loading was successful
+            if (backgroundImage.isError()) {
+                throw new RuntimeException("Error loading background image: " + imageUrl);
+            }
+    
+            // Create and configure the ImageView for the background image
+            ImageView backgroundImageView = new ImageView(backgroundImage);
+            backgroundImageView.fitWidthProperty().bind(mainPane.widthProperty());
+            backgroundImageView.fitHeightProperty().bind(mainPane.heightProperty());
+    
+            // Add the background image to the mainPane
+            mainPane.getChildren().add(backgroundImageView);
+        } catch (Exception e) {
+            // Print detailed error message
+            System.err.println("Error creating background: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
+    private void createBackgroundBehindButtons() {
+        Rectangle background = new Rectangle(20, 20, 252, 560); // Position (50, 50) and size (500, 900)
+        background.setFill(Color.rgb(0, 0, 0, 0.8)); // Semi-transparent black
+        mainPane.getChildren().add(background);
+        // background.toBack(); // This line is commented out
     }
 }

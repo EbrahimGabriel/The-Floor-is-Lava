@@ -13,8 +13,8 @@ import javafx.scene.text.Font;
 public class GameButton extends Button {
 
 	private final String FONT_PATH = "src/model/resources/rainyhearts.ttf";
-	private final String BUTTON_PRESSED_STYLE = "-fx-background-color: transparent; -fx-background-image: url('model/resources/red_button_pressed.png');";
-	private final String BUTTON_FREE_STYLE = "-fx-background-color: transparent; -fx-background-image: url('model/resources/red_button_free.png');";
+	private final String BUTTON_PRESSED_STYLE = "-fx-background-color: transparent; -fx-background-image: url('model/resources/red_button_pressed.png'); -fx-text-fill: black;";
+	private final String BUTTON_FREE_STYLE = "-fx-background-color: transparent; -fx-background-image: url('model/resources/red_button_free.png'); -fx-text-fill: black;";
 
 	public GameButton(String text) {
 		setText(text);
