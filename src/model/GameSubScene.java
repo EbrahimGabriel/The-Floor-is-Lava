@@ -41,7 +41,7 @@ public class GameSubScene extends SubScene {
 
         // Set initial position to be off-screen
         setLayoutX(Toolkit.getDefaultToolkit().getScreenSize().width);
-        setLayoutY(180);
+        setLayoutY(120);
     }
 
     public void moveSubScene() {
@@ -50,7 +50,7 @@ public class GameSubScene extends SubScene {
         transition.setNode(this);
 
         if (isHidden) {
-            transition.setToX(-980);
+            transition.setToX(-1270);
             isHidden = false;
         } else {
             transition.setToX(0);
