@@ -1,9 +1,13 @@
 package view;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
+import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -18,6 +22,8 @@ import model.CharacterSelect;
 import model.GameButton;
 import model.GameSubScene;
 import model.InfoLabel;
+import javafx.scene.control.Label;
+import javafx.scene.text.Font;
 
 public class ViewManager {
     // private static final String[] BUTTON_TEXTS = { "START GAME", "MULTIPLAYER", "QUIT" };
@@ -30,7 +36,9 @@ public class ViewManager {
     private Stage mainStage;
 
     private final static int MENU_BUTTON_START_X = 50;
-    private final static int MENU_BUTTON_START_Y = 230;
+    private final static int MENU_BUTTON_START_Y = 240;
+
+    private final String FONT_PATH = "model/resources/rainyhearts.ttf";
 
     private GameSubScene playSubScene;
     private GameSubScene characterSelectSubScene;
@@ -233,6 +241,34 @@ public class ViewManager {
         Rectangle background = new Rectangle(20, 20, 252, 560); // Position (50, 50) and size (500, 900)
         background.setFill(Color.rgb(0, 0, 0, 0.8)); // Semi-transparent black
         mainPane.getChildren().add(background);
-        // background.toBack(); // This line is commented out
+    
+        // Load the custom font
+        Font customFont = null;
+        try {
+            customFont = Font.loadFont(getClass().getResourceAsStream("/" + FONT_PATH), 60);
+        } catch (Exception e) {
+            System.err.println("Error loading font: " + e.getMessage());
+            e.printStackTrace();
+        }
+    
+        // Create a new label
+        Label label = new Label("The Floor");
+        label.setFont(customFont); // Set the custom font
+        label.setTextFill(Color.WHITE); // Set the text color to white
+        label.setLayoutX(30); // Set the X position of the label
+        label.setLayoutY(80); // Set the Y position of the label
+        label.setAlignment(Pos.CENTER); // Set the alignment to center
+
+        // Create a new label
+        Label newLabel = new Label("is Lava");
+        newLabel.setFont(customFont); // Set the custom font
+        newLabel.setTextFill(Color.WHITE); // Set the text color to white
+        newLabel.setLayoutX(60); // Set the X position of the new label
+        newLabel.setLayoutY(123); // Set the Y position of the new label to be greater than the Y position of the existing label
+        newLabel.setAlignment(Pos.CENTER); // Set the alignment to center
+
+        // Add the label to the mainPane
+        mainPane.getChildren().add(label);
+        mainPane.getChildren().add(newLabel);
     }
 }
