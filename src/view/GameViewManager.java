@@ -11,6 +11,7 @@ import javafx.animation.Timeline;
 import javafx.application.Platform;
 import javafx.collections.ObservableList;
 import javafx.event.EventHandler;
+import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.Scene;
@@ -27,6 +28,7 @@ import javafx.scene.layout.BackgroundRepeat;
 import javafx.scene.layout.BackgroundSize;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
+import javafx.scene.layout.Priority;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
@@ -35,12 +37,13 @@ import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 import model.CHARACTER;
+import model.GameButton;
 
 public class GameViewManager {
 
     private static final int WINDOW_WIDTH = 960;
     private static final int WINDOW_HEIGHT = 540;
-    private final String BACKGROUND_IMAGE_GAMEOVER = "model/resources/subscene_bg3.png";
+    private final String BACKGROUND_IMAGE_GAMEOVER = "model/resources/gameover.png";
     private Pane gamePane;
     private Scene gameScene;
     private Stage gameStage;
@@ -239,40 +242,45 @@ public class GameViewManager {
     }
 
     private void showGameOverPopup() {
-		// Load the image
-		Image image = new Image(BACKGROUND_IMAGE_GAMEOVER);
-		ImageView imageView = new ImageView(image);
-	
-		// Set the size of the image view
-		imageView.setFitWidth(400);  // width of a typical dialog box
-		imageView.setFitHeight(200); 
+        // Load the image
+        Image image = new Image(BACKGROUND_IMAGE_GAMEOVER);
+        ImageView imageView = new ImageView(image);
 
-		Text gameOverText = new Text("Game Over!");
-		Button mainMenuButton = new Button("Main Menu");
-		mainMenuButton.setOnAction(event -> {
-			gameStage.close(); // close the game stage
-        	menuStage.show(); 
-		});
+        // Set the size of the image view
+        imageView.setFitWidth(500);  // width of a typical dialog box
+        imageView.setFitHeight(300); 
 
-		// Create a VBox to hold the text and button
-		// ImageView imageView = new ImageView(); // Declare and initialize the imageView variable
-		VBox vbox = new VBox(10, gameOverText, mainMenuButton);
-		vbox.setAlignment(Pos.CENTER);
+        // Create the main menu button using GameButton
+        GameButton mainMenuButton = new GameButton("Main Menu");
+        mainMenuButton.setOnAction(event -> {
+            gameStage.close(); // close the game stage
+            menuStage.show(); 
+        });
 
-		// Create a StackPane to hold the image view and VBox
-		StackPane stackPane = new StackPane(imageView, vbox);
+        mainMenuButton.setTextFill(Color.DARKGRAY);
 
-		// Position the stack pane
-		stackPane.setLayoutX(WINDOW_WIDTH / 2 - imageView.getFitWidth() / 2);
-		stackPane.setLayoutY(WINDOW_HEIGHT / 2 - imageView.getFitHeight() / 2);
+        // Create a spacer with VBox layout
+        VBox spacer = new VBox();
+        VBox.setVgrow(spacer, Priority.ALWAYS);
 
-		Platform.runLater(() -> {
+        VBox vbox = new VBox(10, spacer, mainMenuButton);
+        vbox.setAlignment(Pos.CENTER);
+        vbox.setPadding(new Insets(0, 0, 40, 0)); // Add 20px padding at the bottom
+
+        // Create a StackPane to hold the image view and VBox
+        StackPane stackPane = new StackPane(imageView, vbox);
+
+        // Position the stack pane
+        stackPane.setLayoutX(WINDOW_WIDTH / 2 - imageView.getFitWidth() / 2);
+        stackPane.setLayoutY(WINDOW_HEIGHT / 2 - imageView.getFitHeight() / 2);
+
+        Platform.runLater(() -> {
             gamePane.getChildren().add(stackPane);
             stackPane.toFront();  // bring the game over popup to the front
         });
 
         lavaSpawnTimeline.stop();
-	}
+    }
 
     private void removeLife() {
         playerLife--;
