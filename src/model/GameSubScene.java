@@ -19,7 +19,7 @@ import javafx.scene.text.Text;
 public class GameSubScene extends SubScene {
 
     private final String FONT_PATH = "src/model/resources/rainyhearts.ttf";
-    private final String BACKGROUND_IMAGE = "model/resources/red_button_free.png";
+    private final String BACKGROUND_IMAGE = "/model/resources/subscene_bg3.png";
 
     private boolean isHidden = true;
 
