@@ -100,6 +100,8 @@ public class ViewManager {
         characterSelectSubScene = new GameSubScene();
         mainPane.getChildren().add(characterSelectSubScene);
 
+        
+
         InfoLabel chooseCharacterLabel = new InfoLabel("Choose your character");
         chooseCharacterLabel.setLayoutY(110);
         chooseCharacterLabel.setLayoutY(25);
@@ -129,7 +131,7 @@ public class ViewManager {
                 }
             });
         }
-        box.setLayoutX(300 - (110*2));
+        box.setLayoutX(300 - (110*1.6));
         box.setLayoutY(100);
         return box;
     }
@@ -150,8 +152,8 @@ public class ViewManager {
 
     private GameButton createPlayButton() {
         GameButton playButton = new GameButton("Play");
-        playButton.setLayoutX(100);
-        playButton.setLayoutY(200);
+        playButton.setLayoutX(160);
+        playButton.setLayoutY(230);
 
         playButton.setOnAction(new EventHandler<ActionEvent>() {
             @Override
@@ -180,10 +182,12 @@ public class ViewManager {
     private void createHelpButton() {
         GameButton helpButton = new GameButton("Help");
         addMenuButton(helpButton);
-
+    
         helpButton.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
+                ImageView imageView = new ImageView(new Image("/model/resources/mechanicsf.png"));
+                helpSubScene.getPane().getChildren().add(imageView);
                 showSubScene(helpSubScene);
             }
         });
