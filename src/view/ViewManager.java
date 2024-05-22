@@ -41,7 +41,7 @@ public class ViewManager {
     private final String FONT_PATH = "model/resources/rainyhearts.ttf";
 
     private GameSubScene playSubScene;
-    private GameSubScene characterSelectSubScene;
+    private GameSubScene lobbySubScene;
     private GameSubScene helpSubScene;
     private GameSubScene creditsSubScene;
 
@@ -49,8 +49,6 @@ public class ViewManager {
 
     List<GameButton> menuButtons;
 
-    List<CharacterSelect> characterList;
-    private CHARACTER chosenCharacter;
 
     public ViewManager() {
         menuButtons = new ArrayList<>();
@@ -64,8 +62,6 @@ public class ViewManager {
         createSubScenes();
         // createBackgroundBehindButtons();
         createButtons();
-        
-        
     }
 
     public Stage getMainStage() {
@@ -86,7 +82,7 @@ public class ViewManager {
         playSubScene = new GameSubScene();
         mainPane.getChildren().add(playSubScene);
 
-        createCharacterSelectSubScene();
+        createLobbySubScene();
 
         helpSubScene = new GameSubScene();
         mainPane.getChildren().add(helpSubScene);
@@ -96,44 +92,18 @@ public class ViewManager {
 
     }
 
-    private void createCharacterSelectSubScene() {
-        characterSelectSubScene = new GameSubScene();
-        mainPane.getChildren().add(characterSelectSubScene);
+    private void createLobbySubScene() {
+        lobbySubScene = new GameSubScene();
+        mainPane.getChildren().add(lobbySubScene);
 
-        
+
 
         InfoLabel chooseCharacterLabel = new InfoLabel("Choose your character");
-        chooseCharacterLabel.setLayoutY(110);
+        chooseCharacterLabel.setLayoutX(125);
         chooseCharacterLabel.setLayoutY(25);
-        characterSelectSubScene.getPane().getChildren().add(chooseCharacterLabel);
-        characterSelectSubScene.getPane().getChildren().add(createCharactersToSelect());
-        characterSelectSubScene.getPane().getChildren().add(createPlayButton());
+        lobbySubScene.getPane().getChildren().add(chooseCharacterLabel);
+        lobbySubScene.getPane().getChildren().add(createPlayButton());
 
-    }
-
-    private HBox createCharactersToSelect() {
-        HBox box = new HBox();
-        box.setSpacing(20);
-        characterList = new ArrayList<>();
-        for (CHARACTER character: CHARACTER.values()) {
-            CharacterSelect characterToPick = new CharacterSelect(character);
-            characterList.add(characterToPick);
-            box.getChildren().add(characterToPick);
-
-            characterToPick.setOnMouseClicked(new EventHandler<MouseEvent>() {
-                @Override
-                public void handle(MouseEvent event) {
-                    for (CharacterSelect character: characterList) {
-                        character.setIsCharacterChosen(false);
-                    }
-                    characterToPick.setIsCharacterChosen(true);
-                    chosenCharacter = characterToPick.getCharacter();
-                }
-            });
-        }
-        box.setLayoutX(300 - (110*1.6));
-        box.setLayoutY(100);
-        return box;
     }
 
     private void addMenuButton(GameButton button) {
@@ -158,10 +128,8 @@ public class ViewManager {
         playButton.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-                if (chosenCharacter != null) {
-                    GameViewManager gameManager = new GameViewManager();
-                    gameManager.createNewGame(mainStage, chosenCharacter);
-                }
+            	LobbyViewManager lobbyManager = new LobbyViewManager();
+            	lobbyManager.createLobby(mainStage);
             }
         });
         return playButton;
@@ -174,7 +142,7 @@ public class ViewManager {
         startButton.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-                showSubScene(characterSelectSubScene);
+                showSubScene(lobbySubScene);
             }
         });
     }
@@ -182,7 +150,7 @@ public class ViewManager {
     private void createHelpButton() {
         GameButton helpButton = new GameButton("Help");
         addMenuButton(helpButton);
-    
+
         helpButton.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
@@ -221,12 +189,12 @@ public class ViewManager {
         try {
             String imageUrl = "/view/resources/bg_2.png";
             Image backgroundImage = new Image(imageUrl);
-    
+
             // Check if the image loading was successful
             if (backgroundImage.isError()) {
                 throw new RuntimeException("Error loading background image: " + imageUrl);
             }
-    
+
             // Create and configure the ImageView for the background image
             ImageView backgroundImageView = new ImageView(backgroundImage);
             // backgroundImageView.setPreserveRatio(true);
@@ -234,7 +202,7 @@ public class ViewManager {
             // backgroundImageView.setCache(false);
             backgroundImageView.fitWidthProperty().bind(mainPane.widthProperty());
             backgroundImageView.fitHeightProperty().bind(mainPane.heightProperty());
-    
+
             // Add the background image to the mainPane
             mainPane.getChildren().add(backgroundImageView);
         } catch (Exception e) {
@@ -248,7 +216,7 @@ public class ViewManager {
         Rectangle background = new Rectangle(20, 20, 252, 560); // Position (50, 50) and size (500, 900)
         background.setFill(Color.rgb(0, 0, 0, 0.8)); // Semi-transparent black
         mainPane.getChildren().add(background);
-    
+
         // Load the custom font
         Font customFont = null;
         try {
@@ -257,7 +225,7 @@ public class ViewManager {
             System.err.println("Error loading font: " + e.getMessage());
             e.printStackTrace();
         }
-    
+
         // Create a new label
         Label label = new Label("The Floor");
         label.setFont(customFont); // Set the custom font

@@ -34,13 +34,8 @@ public class GameSubScene extends SubScene {
         AnchorPane root2 = (AnchorPane) this.getRoot();
         root2.setBackground(new Background(image));
 
-        //remove later
-        Text t = new Text(10,50,"Test");
-        root2.getChildren().add(t);
-        //----
-
         // Set initial position to be off-screen
-        setLayoutX(Toolkit.getDefaultToolkit().getScreenSize().width);
+        setLayoutX(-500);
         setLayoutY(120);
     }
 
@@ -50,7 +45,7 @@ public class GameSubScene extends SubScene {
         transition.setNode(this);
 
         if (isHidden) {
-            transition.setToX(-1270);
+            transition.setToX(500);
             isHidden = false;
         } else {
             transition.setToX(0);
