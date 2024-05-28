@@ -13,8 +13,10 @@ import javafx.scene.text.Font;
 public class GameButton extends Button {
 
 	private final String FONT_PATH = "src/model/resources/rainyhearts.ttf";
-	private final String BUTTON_PRESSED_STYLE = "-fx-background-color: transparent; -fx-background-image: url('model/resources/red_button_pressed.png');";
-	private final String BUTTON_FREE_STYLE = "-fx-background-color: transparent; -fx-background-image: url('model/resources/red_button_free.png');";
+	// Font customFont = Font.loadFont(getClass().getResourceAsStream("/view/resources/ArchitypeVierkantW00.ttf"), 30);
+
+	private final String BUTTON_PRESSED_STYLE = "-fx-background-color: transparent; -fx-background-image: url('model/resources/button_bg.png'); -fx-text-fill: black;";
+	private final String BUTTON_FREE_STYLE = "-fx-background-color: transparent; -fx-background-image: url('model/resources/button_bg.png'); -fx-text-fill: black;";
 
 	public GameButton(String text) {
 		setText(text);
@@ -27,9 +29,9 @@ public class GameButton extends Button {
 
 	private void setButtonFont() {
 		try {
-		setFont(Font.loadFont(new FileInputStream(FONT_PATH), 16));
-		} catch (FileNotFoundException e) {
-			setFont(Font.font("Verdana",16));
+			setFont(Font.loadFont(getClass().getResourceAsStream("/view/resources/ArchitypeStedelijkW00.ttf"), 25));
+		} catch (NullPointerException e) {
+			setFont(Font.font("Verdana", 16));
 		}
 	}
 

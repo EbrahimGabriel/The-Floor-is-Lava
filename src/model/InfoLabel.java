@@ -18,22 +18,22 @@ public class InfoLabel extends Label {
 	public final static String BACKGROUND_IMAGE = "view/resources/label_panel.png";
 
 	public InfoLabel(String text) {
-		setPrefWidth(380);
+		setPrefWidth(250);
 		setPrefHeight(49);
 		setText(text);
 		setWrapText(true);
 		setLabelFont();
 		setAlignment(Pos.CENTER);
 
-		BackgroundImage backgroundImage = new BackgroundImage(new Image(BACKGROUND_IMAGE, 380, 49, false, true),
+		BackgroundImage backgroundImage = new BackgroundImage(new Image(BACKGROUND_IMAGE, 250, 49, false, true),
 				BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.DEFAULT, null);
 		setBackground(new Background(backgroundImage));
 	}
 
 	private void setLabelFont() {
 		try {
-		setFont(Font.loadFont(new FileInputStream(new File(FONT_PATH)), 16));
-		} catch (FileNotFoundException e){
+			setFont(Font.loadFont(getClass().getResourceAsStream("/view/resources/ArchitypeStedelijkW00.ttf"), 25));
+		} catch (NullPointerException e) {
 			setFont(Font.font("Verdana", 16));
 		}
 	}
