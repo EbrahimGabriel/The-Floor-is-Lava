@@ -1,8 +1,5 @@
 package model;
 
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-
 import javafx.event.EventHandler;
 import javafx.scene.control.Button;
 import javafx.scene.effect.DropShadow;
@@ -21,7 +18,7 @@ public class GameButton extends Button {
 	public GameButton(String text) {
 		setText(text);
 		setButtonFont();
-		setPrefWidth(190);
+		setPrefWidth(120);
 		setPrefHeight(49);
 		setStyle(BUTTON_FREE_STYLE);
 		initializeButtonListeners();

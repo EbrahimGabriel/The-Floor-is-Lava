@@ -1,29 +1,24 @@
 package view;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
+
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
+import javafx.scene.control.Label;
+import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.HBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
+import javafx.scene.text.Font;
 import javafx.stage.Stage;
-import model.CHARACTER;
-import model.CharacterSelect;
 import model.GameButton;
 import model.GameSubScene;
 import model.InfoLabel;
-import javafx.scene.control.Label;
-import javafx.scene.text.Font;
 
 public class ViewManager {
     // private static final String[] BUTTON_TEXTS = { "START GAME", "MULTIPLAYER", "QUIT" };
@@ -40,6 +35,13 @@ public class ViewManager {
 
     private final String FONT_PATH = "model/resources/rainyhearts.ttf";
 
+    private TextField ipInput;
+    private TextField portInput;
+    private TextField nameInput;
+    private String ip;
+    private int port;
+    private String name;
+
     private GameSubScene playSubScene;
     private GameSubScene lobbySubScene;
     private GameSubScene helpSubScene;
@@ -48,7 +50,6 @@ public class ViewManager {
     private GameSubScene sceneToHide;
 
     List<GameButton> menuButtons;
-
 
     public ViewManager() {
         menuButtons = new ArrayList<>();
@@ -96,14 +97,33 @@ public class ViewManager {
         lobbySubScene = new GameSubScene();
         mainPane.getChildren().add(lobbySubScene);
 
+        InfoLabel nameLabel = new InfoLabel("Name");
+        nameLabel.setLayoutX(50);
+        nameLabel.setLayoutY(0);
 
+        InfoLabel ipLabel = new InfoLabel("IP Address");
+        ipLabel.setLayoutX(50);
+        ipLabel.setLayoutY(75);
 
-        InfoLabel chooseCharacterLabel = new InfoLabel("Choose your character");
-        chooseCharacterLabel.setLayoutX(125);
-        chooseCharacterLabel.setLayoutY(25);
-        lobbySubScene.getPane().getChildren().add(chooseCharacterLabel);
-        lobbySubScene.getPane().getChildren().add(createPlayButton());
+        InfoLabel portLabel = new InfoLabel("Port");
+        portLabel.setLayoutX(50);
+        portLabel.setLayoutY(150);
 
+        nameInput = new TextField();
+        nameInput.setLayoutX(200);
+        nameInput.setLayoutY(10);
+
+        ipInput = new TextField();
+        ipInput.setLayoutX(200);
+        ipInput.setLayoutY(85);
+
+        portInput = new TextField();
+        portInput.setLayoutX(200);
+        portInput.setLayoutY(160);
+
+        lobbySubScene.getPane().getChildren().addAll(nameLabel, ipLabel, portLabel,
+        		nameInput, ipInput, portInput,
+        		createCreateButton(), createJoinButton());
     }
 
     private void addMenuButton(GameButton button) {
@@ -120,19 +140,54 @@ public class ViewManager {
         createExitButton();
     }
 
-    private GameButton createPlayButton() {
-        GameButton playButton = new GameButton("Play");
-        playButton.setLayoutX(160);
-        playButton.setLayoutY(230);
+    private GameButton createCreateButton() {
+        GameButton createButton = new GameButton("Create");
+        createButton.setLayoutX(320);
+        createButton.setLayoutY(230);
 
-        playButton.setOnAction(new EventHandler<ActionEvent>() {
+        createButton.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-            	LobbyViewManager lobbyManager = new LobbyViewManager();
-            	lobbyManager.createLobby(mainStage);
-            }
+            	if (ipInput.getText() != null && !ipInput.getText().isEmpty()
+            			&& portInput.getText() != null && !portInput.getText().isEmpty()) {
+    				ip = ipInput.getText();
+    				port = Integer.parseInt(portInput.getText());
+    				name = nameInput.getText();
+                	LobbyViewManager lobbyManager = new LobbyViewManager("create", ip, port, name);
+                	lobbyManager.createLobby(mainStage);
+            	}
+
+            	else {
+            		// TODO: ADD ERROR PROMPT
+            	}
+        	}
         });
-        return playButton;
+        return createButton;
+    }
+
+    private GameButton createJoinButton() {
+    	GameButton joinButton = new GameButton("Join");
+    	joinButton.setLayoutX(80);
+    	joinButton.setLayoutY(230);
+
+    	joinButton.setOnAction(new EventHandler<ActionEvent>() {
+    		@Override
+    		public void handle(ActionEvent event) {
+    			if (ipInput.getText() != null && !ipInput.getText().isEmpty()
+    					&& portInput.getText() != null && !portInput.getText().isEmpty()) {
+    				ip = ipInput.getText();
+    				port = Integer.parseInt(portInput.getText());
+    				name = nameInput.getText();
+    				LobbyViewManager lobbyManager = new LobbyViewManager("join", ip, port, name);
+                	lobbyManager.createLobby(mainStage);
+            	}
+
+            	else {
+            		// TODO: ADD ERROR PROMPT
+            	}
+    		}
+    	});
+    	return joinButton;
     }
 
     private void createStartButton() {

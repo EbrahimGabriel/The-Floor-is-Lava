@@ -1,9 +1,5 @@
 package model;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
@@ -18,16 +14,16 @@ public class InfoLabel extends Label {
 	public final static String BACKGROUND_IMAGE = "view/resources/label_panel.png";
 
 	public InfoLabel(String text) {
-		setPrefWidth(250);
+		setPrefWidth(150);
 		setPrefHeight(49);
 		setText(text);
 		setWrapText(true);
 		setLabelFont();
 		setAlignment(Pos.CENTER);
 
-		BackgroundImage backgroundImage = new BackgroundImage(new Image(BACKGROUND_IMAGE, 250, 49, false, true),
-				BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.DEFAULT, null);
-		setBackground(new Background(backgroundImage));
+//		BackgroundImage backgroundImage = new BackgroundImage(new Image(BACKGROUND_IMAGE, 250, 49, false, true),
+//				BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.DEFAULT, null);
+//		setBackground(new Background(backgroundImage));
 	}
 
 	private void setLabelFont() {

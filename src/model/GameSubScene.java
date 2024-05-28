@@ -10,12 +10,6 @@ import javafx.scene.layout.BackgroundPosition;
 import javafx.scene.layout.BackgroundRepeat;
 import javafx.util.Duration;
 
-import java.awt.Toolkit;
-
-//remove later
-import javafx.scene.text.Text;
-//---
-
 public class GameSubScene extends SubScene {
 
     private final String FONT_PATH = "src/model/resources/rainyhearts.ttf";

@@ -1,7 +1,5 @@
 package view;
 
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -15,9 +13,7 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
 import javafx.scene.control.Label;
-import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyEvent;
@@ -26,14 +22,12 @@ import javafx.scene.layout.BackgroundImage;
 import javafx.scene.layout.BackgroundPosition;
 import javafx.scene.layout.BackgroundRepeat;
 import javafx.scene.layout.BackgroundSize;
-import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
-import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 import model.CHARACTER;
@@ -56,10 +50,6 @@ public class GameViewManager {
     private boolean isInvincible = false;
 
     private AnimationTimer gameTimer;
-    private boolean chatVisible = false;
-    private GridPane chatPane;
-    private TextField chatInput;
-     private Label chatLog;
 
     private Timeline lavaSpawnTimeline;
 
@@ -69,7 +59,7 @@ public class GameViewManager {
 
     public GameViewManager() {
         initializeStage();
-        
+
         createKeyListeners();
     }
 
@@ -89,18 +79,6 @@ public class GameViewManager {
                         break;
                     case D:
                         isRightPressed = true;
-                        break;
-                    case SLASH:
-                        chatVisible = !chatVisible;
-                        chatPane.setVisible(!chatPane.isVisible());
-                        chatInput.requestFocus();
-                        break;
-                    case ENTER:
-                        if (chatVisible) {
-                            String message = chatInput.getText();
-                            chatLog.setText(chatLog.getText() + "\n" + message);
-                            gamePane.requestFocus();
-                        }
                         break;
                     default:
                         break;
@@ -136,7 +114,7 @@ public class GameViewManager {
         gameScene = new Scene(gamePane, WINDOW_WIDTH, WINDOW_HEIGHT);
         gameStage = new Stage();
         gameStage.setScene(gameScene);
-        gameStage.setResizable(false); 
+        gameStage.setResizable(false);
     }
 
     private void createBackground() {
@@ -173,17 +151,17 @@ public class GameViewManager {
         killCountLabel.setLayoutX(340); // Adjust these values to position the label
         killCountLabel.setLayoutY(40); // Adjust these values to position the label
         gamePane.getChildren().add(killCountLabel);
-        
+
     }
 
-    
+
 
     private void createCharacter(CHARACTER chosenCharacter) {
         character = new ImageView(chosenCharacter.getUrl());
         character.setLayoutX(WINDOW_WIDTH/2);
         character.setLayoutY(WINDOW_HEIGHT/2);
         gamePane.getChildren().add(character);
-        character.toFront();  
+        character.toFront();
     }
 
     private void createGameLoop() {
@@ -204,41 +182,30 @@ public class GameViewManager {
         int bottomPadding = 88;
         int leftPadding = 70;
         double rightPadding = 140.5;
-    
+
         if (isUpPressed && !isDownPressed) {
             if (character.getLayoutY() - 5 >= topPadding) {
                 character.setLayoutY(character.getLayoutY() - 5);
             }
         }
-    
+
         if (!isUpPressed && isDownPressed) {
             if (character.getLayoutY() + 5 <= WINDOW_HEIGHT - bottomPadding - character.getFitHeight()) {
                 character.setLayoutY(character.getLayoutY() + 5);
             }
         }
-    
+
         if (isLeftPressed && !isRightPressed) {
             if (character.getLayoutX() - 5 >= leftPadding) {
                 character.setLayoutX(character.getLayoutX() - 5);
             }
         }
-    
+
         if (!isLeftPressed && isRightPressed) {
             if (character.getLayoutX() + 5 <= WINDOW_WIDTH - rightPadding - character.getFitWidth()) {
                 character.setLayoutX(character.getLayoutX() + 5);
             }
         }
-    }
-
-    private void createChat() {
-        chatPane = new GridPane();
-        chatInput = new TextField();
-        chatLog = new Label();
-        chatPane.getChildren().addAll(chatLog, chatInput);
-        chatPane.setLayoutX(0);
-        chatPane.setLayoutY(0);
-        chatPane.setVisible(false);
-        gamePane.getChildren().add(chatPane);
     }
 
     private void showGameOverPopup() {
@@ -248,13 +215,13 @@ public class GameViewManager {
 
         // Set the size of the image view
         imageView.setFitWidth(500);  // width of a typical dialog box
-        imageView.setFitHeight(300); 
+        imageView.setFitHeight(300);
 
         // Create the main menu button using GameButton
         GameButton mainMenuButton = new GameButton("Main Menu");
         mainMenuButton.setOnAction(event -> {
             gameStage.close(); // close the game stage
-            menuStage.show(); 
+            menuStage.show();
         });
 
         mainMenuButton.setTextFill(Color.DARKGRAY);
@@ -295,9 +262,9 @@ public class GameViewManager {
         if (isInvincible) {
             return;
         }
-    
+
         ObservableList<Node> allNodes = gamePane.getChildren();
-    
+
         for (Node node : allNodes) {
             if (node instanceof ImageView && node.getUserData() != null && node.getUserData().equals("lava_tile")) {
                 if (character.getBoundsInParent().intersects(node.getBoundsInParent())) {
@@ -309,11 +276,11 @@ public class GameViewManager {
             }
         }
     }
-    
-    
+
+
     private void startInvincibilityPeriod() {
         isInvincible = true;
-    
+
         Timeline invincibilityTimeline = new Timeline(new KeyFrame(Duration.seconds(1), event -> isInvincible = false));
         invincibilityTimeline.play();
     }
@@ -321,7 +288,6 @@ public class GameViewManager {
     public void createNewGame(Stage menuStage, CHARACTER chosenCharacter) {
         this.menuStage = menuStage;
         this.menuStage.hide();
-        createChat();
         createBackground();
         createCharacter(chosenCharacter);
         createGameElements(chosenCharacter);
@@ -345,12 +311,12 @@ public class GameViewManager {
         int bottomPadding = 20;
         int leftPadding = 70;
         int rightPadding = 70;
-    
+
         Image normalTileImage = new Image(getClass().getResourceAsStream("/view/resources/normal_tile.png"));
-    
+
         int numCols = (WINDOW_WIDTH - leftPadding - rightPadding) / tileSize;
         int numRows = (WINDOW_HEIGHT - topPadding - bottomPadding) / tileSize;
-    
+
         for (int col = 0; col < numCols; col++) {
             for (int row = 0; row < numRows; row++) {
                 ImageView normalTile = new ImageView(normalTileImage);
@@ -363,7 +329,7 @@ public class GameViewManager {
             }
         }
     }
-    
+
 
     private void spawnLavaTile() {
         int tileSize = 100;
@@ -371,28 +337,28 @@ public class GameViewManager {
         ImageView lavaTile = new ImageView(lavaImage);
         lavaTile.setFitWidth(tileSize);
         lavaTile.setFitHeight(tileSize);
-    
+
         // Filter to find normal tiles
         List<ImageView> normalTiles = gamePane.getChildren().stream()
             .filter(node -> node instanceof ImageView && "normal_tile".equals(node.getUserData()))
             .map(node -> (ImageView) node)
             .collect(Collectors.toList());
-    
+
         // Debugging: Check if normalTiles is null or empty
         if (normalTiles == null || normalTiles.isEmpty()) {
             System.err.println("No normal tiles found to replace with lava tiles.");
             return; // Exit early if no normal tiles are found
         }
-    
+
         // Choose a random normal tile to replace
         ImageView normalTile = normalTiles.get((int) (Math.random() * normalTiles.size()));
-    
+
         // Debugging: Ensure normalTile is not null
         if (normalTile == null) {
             System.err.println("Selected normal tile is null.");
             return; // Exit early if the selected normal tile is null
         }
-    
+
         // Replace the normal tile with a lava tile
         lavaTile.setLayoutX(normalTile.getLayoutX());
         lavaTile.setLayoutY(normalTile.getLayoutY());
@@ -400,10 +366,10 @@ public class GameViewManager {
         gamePane.getChildren().remove(normalTile);
         gamePane.getChildren().add(lavaTile);
     }
-    
-    
-    
 
-    
-    
+
+
+
+
+
 }

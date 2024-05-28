@@ -5,22 +5,20 @@ import java.util.List;
 
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
-import javafx.geometry.Pos;
 import javafx.scene.Scene;
-import javafx.scene.control.Label;
+import javafx.scene.control.TextArea;
+import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.Pane;
-import javafx.scene.paint.Color;
-import javafx.scene.shape.Rectangle;
-import javafx.scene.text.Font;
 import javafx.stage.Stage;
 import model.CHARACTER;
 import model.CharacterSelect;
 import model.GameButton;
+import model.GameClient;
+import model.GameServer;
 import model.GameSubScene;
 import model.InfoLabel;
 
@@ -48,8 +46,22 @@ public class LobbyViewManager {
     List<CharacterSelect> characterList;
     private CHARACTER chosenCharacter;
 
-    public LobbyViewManager() {
+    private TextField chatInput;
+    private TextArea chatLog;
+
+    private GameClient client;
+    private String name;
+
+    public LobbyViewManager(String type, String ip, int port, String name) {
     	initializeLobby();
+    	this.name = name;
+    	if (type == "create") {
+    		createServer(ip, port);
+    	}
+
+    	else if (type == "join") {
+    		joinServer(ip, port);
+    	}
     }
 
     private void initializeLobby() {
@@ -59,15 +71,12 @@ public class LobbyViewManager {
         lobbyStage = new Stage();
         lobbyStage.setScene(lobbyScene);
         lobbyStage.setResizable(false);
-        GameButton test = new GameButton("doggy");
-        test.setLayoutX(100);
-        test.setLayoutY(100);
-        lobbyPane.getChildren().add(test);
 
         createBackground();
         createSubScenes();
         // createBackgroundBehindButtons();
         createButtons();
+        createChat();
     }
 
     public void createLobby(Stage menuStage) {
@@ -98,8 +107,6 @@ public class LobbyViewManager {
     private void createCharacterSelectSubScene() {
         characterSelectSubScene = new GameSubScene();
         lobbyPane.getChildren().add(characterSelectSubScene);
-
-
 
         InfoLabel chooseCharacterLabel = new InfoLabel("Choose your character");
         chooseCharacterLabel.setLayoutX(125);
@@ -145,6 +152,7 @@ public class LobbyViewManager {
     private void createButtons() {
         createStartButton();
         createExitButton();
+        createSendButton();
     }
 
     private GameButton createPlayButton() {
@@ -188,6 +196,18 @@ public class LobbyViewManager {
         });
     }
 
+    private void createSendButton() {
+        GameButton startButton = new GameButton("Send");
+        addMenuButton(startButton);
+
+        startButton.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+            	client.sendChat(chatInput.getText());
+            }
+        });
+    }
+
     private void createBackground() {
         try {
             String imageUrl = "/view/resources/bg_2.png";
@@ -213,5 +233,33 @@ public class LobbyViewManager {
             System.err.println("Error creating background: " + e.getMessage());
             e.printStackTrace();
         }
+    }
+    // ------ networking stuff --------
+
+    private void createServer(String ip, int port) {
+    	GameServer server = new GameServer(port, ip);
+    	server.start();
+    	client = new GameClient(ip, port, this::onChatReceived, name);
+//    	client.sendChat("hello"); //send 1st message to tell server your info
+    }
+
+    private void joinServer(String ip, int port) {
+    	client = new GameClient(ip, port, this::onChatReceived, name);
+//    	client.sendChat("hello");
+    }
+
+    private void onChatReceived(String msg) {
+    	System.out.println("i received " + msg);
+    	chatLog.appendText(msg + '\n');
+    }
+
+    private void createChat() {
+        chatInput = new TextField();
+        chatInput.setLayoutX(0);
+        chatInput.setLayoutY(300);
+        chatLog = new TextArea();
+        chatLog.setLayoutX(0);
+        chatLog.setLayoutY(0);
+        lobbyPane.getChildren().addAll(chatInput, chatLog);
     }
 }
