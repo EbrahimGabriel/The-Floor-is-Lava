@@ -90,6 +90,12 @@ public class GameServer extends Thread {
 class Client {
 	private InetAddress clientAddress;
 	private int clientPort;
+	private String name;
+	private CHARACTER character;
+	private int lives;
+	private int xpos;
+	private int ypos;
+	private int playerNum;
 
 	public Client (InetAddress clientAddress, int clientPort) {
 		this.clientAddress = clientAddress;
@@ -102,5 +108,29 @@ class Client {
 
 	public int getClientPort() {
 		return this.clientPort;
+	}
+
+	public String getName() {
+		return this.name;
+	}
+
+	public CHARACTER getCharacter() {
+		return this.character;
+	}
+
+	public int getLives() {
+		return this.lives;
+	}
+
+	public int getXPos() {
+		return this.xpos;
+	}
+
+	public int getYPos() {
+		return this.ypos;
+	}
+
+	public int getPlayerNum() {
+		return this.playerNum;
 	}
 }

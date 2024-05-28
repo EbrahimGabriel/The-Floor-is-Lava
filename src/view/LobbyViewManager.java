@@ -134,6 +134,7 @@ public class LobbyViewManager {
                     }
                     characterToPick.setIsCharacterChosen(true);
                     chosenCharacter = characterToPick.getCharacter();
+//                    client.sendPlayerData(msg);
                 }
             });
         }
@@ -240,16 +241,13 @@ public class LobbyViewManager {
     	GameServer server = new GameServer(port, ip);
     	server.start();
     	client = new GameClient(ip, port, this::onChatReceived, name);
-//    	client.sendChat("hello"); //send 1st message to tell server your info
     }
 
     private void joinServer(String ip, int port) {
     	client = new GameClient(ip, port, this::onChatReceived, name);
-//    	client.sendChat("hello");
     }
 
     private void onChatReceived(String msg) {
-    	System.out.println("i received " + msg);
     	chatLog.appendText(msg + '\n');
     }
 
