@@ -271,6 +271,7 @@ public class LobbyViewManager {
 
     	else if (data.type.equals("player")) {
     		if (players[data.playerNum] == null) players[data.playerNum] = new GameData();
+    		players[data.playerNum].playerNum = data.playerNum;
     		players[data.playerNum].name = data.name;
     		players[data.playerNum].character = data.character;
     	}
