@@ -32,6 +32,7 @@ public class GameServer extends Thread {
     	DatagramPacket packet = new DatagramPacket(buf, buf.length);
 
         // Wait for 4 clients to connect (this includes the server!)
+    	int count = 0;
         while (clients.size() < 2) {
             try {
 				socket.receive(packet);
@@ -49,8 +50,19 @@ public class GameServer extends Thread {
             if (!exists) {
             	Client newClient = new Client(address, port);
             	clients.add(newClient);
+            	// send the client their player number
+            	buf = String.valueOf(count).getBytes();
+            	packet = new DatagramPacket(buf, buf.length, address, port);
+            	try {
+					socket.send(packet);
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+            	count++;
             }
         }
+        // make all clients stop waiting
+        broadcastData("ready!");
 
     	running = true;
         while (running) {
@@ -90,12 +102,12 @@ public class GameServer extends Thread {
 class Client {
 	private InetAddress clientAddress;
 	private int clientPort;
-	private String name;
-	private CHARACTER character;
-	private int lives;
-	private int xpos;
-	private int ypos;
-	private int playerNum;
+//	private String name;
+//	private CHARACTER character;
+//	private int lives;
+//	private int xpos;
+//	private int ypos;
+//	private int playerNum;
 
 	public Client (InetAddress clientAddress, int clientPort) {
 		this.clientAddress = clientAddress;
@@ -110,27 +122,27 @@ class Client {
 		return this.clientPort;
 	}
 
-	public String getName() {
-		return this.name;
-	}
-
-	public CHARACTER getCharacter() {
-		return this.character;
-	}
-
-	public int getLives() {
-		return this.lives;
-	}
-
-	public int getXPos() {
-		return this.xpos;
-	}
-
-	public int getYPos() {
-		return this.ypos;
-	}
-
-	public int getPlayerNum() {
-		return this.playerNum;
-	}
+//	public String getName() {
+//		return this.name;
+//	}
+//
+//	public CHARACTER getCharacter() {
+//		return this.character;
+//	}
+//
+//	public int getLives() {
+//		return this.lives;
+//	}
+//
+//	public int getXPos() {
+//		return this.xpos;
+//	}
+//
+//	public int getYPos() {
+//		return this.ypos;
+//	}
+//
+//	public int getPlayerNum() {
+//		return this.playerNum;
+//	}
 }

@@ -18,6 +18,7 @@ import model.CHARACTER;
 import model.CharacterSelect;
 import model.GameButton;
 import model.GameClient;
+import model.GameData;
 import model.GameServer;
 import model.GameSubScene;
 import model.InfoLabel;
@@ -44,7 +45,7 @@ public class LobbyViewManager {
     List<GameButton> lobbyButtons;
 
     List<CharacterSelect> characterList;
-    private CHARACTER chosenCharacter;
+    private CHARACTER chosenCharacter = CHARACTER.BLUE; //default is blue
 
     private TextField chatInput;
     private TextArea chatLog;
@@ -52,8 +53,9 @@ public class LobbyViewManager {
     private GameClient client;
     private String name;
 
+    GameData[] players = new GameData[4];
+
     public LobbyViewManager(String type, String ip, int port, String name) {
-    	initializeLobby();
     	this.name = name;
     	if (type == "create") {
     		createServer(ip, port);
@@ -62,6 +64,7 @@ public class LobbyViewManager {
     	else if (type == "join") {
     		joinServer(ip, port);
     	}
+    	initializeLobby();
     }
 
     private void initializeLobby() {
@@ -75,8 +78,11 @@ public class LobbyViewManager {
         createBackground();
         createSubScenes();
         // createBackgroundBehindButtons();
+
         createButtons();
         createChat();
+
+    	while (!client.ready) {continue;}
     }
 
     public void createLobby(Stage menuStage) {
@@ -114,7 +120,6 @@ public class LobbyViewManager {
         characterSelectSubScene.getPane().getChildren().add(chooseCharacterLabel);
         characterSelectSubScene.getPane().getChildren().add(createCharactersToSelect());
         characterSelectSubScene.getPane().getChildren().add(createPlayButton());
-
     }
 
     private HBox createCharactersToSelect() {
@@ -134,7 +139,6 @@ public class LobbyViewManager {
                     }
                     characterToPick.setIsCharacterChosen(true);
                     chosenCharacter = characterToPick.getCharacter();
-//                    client.sendPlayerData(msg);
                 }
             });
         }
@@ -165,7 +169,7 @@ public class LobbyViewManager {
             @Override
             public void handle(ActionEvent event) {
                 if (chosenCharacter != null) {
-                    GameViewManager gameManager = new GameViewManager();
+                    GameViewManager gameManager = new GameViewManager(client, players);
                     gameManager.createNewGame(lobbyStage, chosenCharacter);
                 }
             }
@@ -240,16 +244,18 @@ public class LobbyViewManager {
     private void createServer(String ip, int port) {
     	GameServer server = new GameServer(port, ip);
     	server.start();
-    	client = new GameClient(ip, port, this::onChatReceived, name);
+    	client = new GameClient(ip, port, this::onMessageReceived, name);
     }
 
     private void joinServer(String ip, int port) {
-    	client = new GameClient(ip, port, this::onChatReceived, name);
+    	client = new GameClient(ip, port, this::onMessageReceived, name);
     }
 
-    private void onChatReceived(String msg) {
-    	chatLog.appendText(msg + '\n');
-    }
+    private void onMessageReceived(GameData data) {
+    	if (data.type.equals("chat")) {
+    	  	chatLog.appendText(data.msg + '\n');
+    	}
+  }
 
     private void createChat() {
         chatInput = new TextField();

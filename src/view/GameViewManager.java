@@ -32,6 +32,8 @@ import javafx.stage.Stage;
 import javafx.util.Duration;
 import model.CHARACTER;
 import model.GameButton;
+import model.GameClient;
+import model.GameData;
 
 public class GameViewManager {
 
@@ -57,9 +59,14 @@ public class GameViewManager {
     private int playerLife;
     private int killCount = 2;
 
-    public GameViewManager() {
-        initializeStage();
+    // -- networking related --
+    private GameClient client;
+    private GameData[] players;
 
+    public GameViewManager(GameClient client, GameData[] players) {
+        initializeStage();
+        this.client = client;
+        this.players = players;
         createKeyListeners();
     }
 
