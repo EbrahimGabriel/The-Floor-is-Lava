@@ -15,6 +15,7 @@ public class GameClient {
     private int serverPort;
     private String name;
     private int playerNum;
+    private Consumer<GameData> onMessageReceived;
 
     private byte[] buf = new byte[8192];
 
@@ -22,6 +23,7 @@ public class GameClient {
 
     public GameClient(String ip, int port, Consumer<GameData> onMessageReceived, String name) {
     	this.name = name;
+    	this.onMessageReceived = onMessageReceived;
         try {
 			this.socket = new DatagramSocket();
 		} catch (SocketException e) {
@@ -39,10 +41,11 @@ public class GameClient {
         this.receivePlayerNum();
         // wait for server to have 4 players
         this.waitServer();
+        this.sendPlayerData(CHARACTER.BLUE, name);
 
         new Thread(() -> {
         	while (true) {
-        		onMessageReceived.accept(receiveData());
+        		this.onMessageReceived.accept(receiveData());
         	}
         }).start();
     }
@@ -154,6 +157,10 @@ public class GameClient {
         }
 
     	ready = true;
+    }
+
+    public void updateConsumer(Consumer<GameData> onMessageReceived) {
+    	this.onMessageReceived = onMessageReceived;
     }
 
     public void close() {

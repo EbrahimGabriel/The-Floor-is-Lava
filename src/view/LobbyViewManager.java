@@ -81,7 +81,6 @@ public class LobbyViewManager {
 
         createButtons();
         createChat();
-
     	while (!client.ready) {continue;}
     }
 
@@ -139,6 +138,8 @@ public class LobbyViewManager {
                     }
                     characterToPick.setIsCharacterChosen(true);
                     chosenCharacter = characterToPick.getCharacter();
+                    // updates your character in other clients
+                    client.sendPlayerData(chosenCharacter, name);
                 }
             });
         }
@@ -185,6 +186,18 @@ public class LobbyViewManager {
             @Override
             public void handle(ActionEvent event) {
                 showSubScene(characterSelectSubScene);
+            }
+        });
+
+        GameButton testButton = new GameButton("TEST");
+        addMenuButton(testButton);
+
+        testButton.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+            	for (GameData player : players) {
+            		System.out.println(player.name + ", " + player.character.getColor());
+            	}
             }
         });
     }
@@ -255,6 +268,13 @@ public class LobbyViewManager {
     	if (data.type.equals("chat")) {
     	  	chatLog.appendText(data.msg + '\n');
     	}
+
+    	else if (data.type.equals("player")) {
+    		if (players[data.playerNum] == null) players[data.playerNum] = new GameData();
+    		players[data.playerNum].name = data.name;
+    		players[data.playerNum].character = data.character;
+    	}
+    	// no game data should be received at this point
   }
 
     private void createChat() {
