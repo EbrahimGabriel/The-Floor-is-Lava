@@ -6,7 +6,6 @@ import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.SocketException;
 import java.net.UnknownHostException;
-import java.util.Arrays;
 import java.util.function.Consumer;
 
 public class GameClient {
@@ -161,6 +160,10 @@ public class GameClient {
 
     public void updateConsumer(Consumer<GameData> onMessageReceived) {
     	this.onMessageReceived = onMessageReceived;
+    }
+
+    public int getPlayerNum() {
+    	return this.playerNum;
     }
 
     public void close() {

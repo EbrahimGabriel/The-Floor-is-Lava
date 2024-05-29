@@ -33,7 +33,7 @@ public class GameServer extends Thread {
 
         // Wait for 4 clients to connect (this includes the server!)
     	int count = 0;
-        while (clients.size() < 4) {
+        while (clients.size() < 2) {
             try {
 				socket.receive(packet);
 			} catch (IOException e1) {
@@ -95,19 +95,18 @@ public class GameServer extends Thread {
 
       String received = new String(
         packet.getData(), 0, packet.getLength());
+
       broadcastData(received);
+    }
+
+    public void close() {
+    	socket.close();
     }
 }
 
 class Client {
 	private InetAddress clientAddress;
 	private int clientPort;
-//	private String name;
-//	private CHARACTER character;
-//	private int lives;
-//	private int xpos;
-//	private int ypos;
-//	private int playerNum;
 
 	public Client (InetAddress clientAddress, int clientPort) {
 		this.clientAddress = clientAddress;
@@ -121,28 +120,4 @@ class Client {
 	public int getClientPort() {
 		return this.clientPort;
 	}
-
-//	public String getName() {
-//		return this.name;
-//	}
-//
-//	public CHARACTER getCharacter() {
-//		return this.character;
-//	}
-//
-//	public int getLives() {
-//		return this.lives;
-//	}
-//
-//	public int getXPos() {
-//		return this.xpos;
-//	}
-//
-//	public int getYPos() {
-//		return this.ypos;
-//	}
-//
-//	public int getPlayerNum() {
-//		return this.playerNum;
-//	}
 }

@@ -53,7 +53,7 @@ public class LobbyViewManager {
     private GameClient client;
     private String name;
 
-    GameData[] players = new GameData[4];
+    GameData[] players = new GameData[2];
 
     public LobbyViewManager(String type, String ip, int port, String name) {
     	this.name = name;
@@ -171,7 +171,7 @@ public class LobbyViewManager {
             public void handle(ActionEvent event) {
                 if (chosenCharacter != null) {
                     GameViewManager gameManager = new GameViewManager(client, players);
-                    gameManager.createNewGame(lobbyStage, chosenCharacter);
+                    gameManager.createNewGame(lobbyStage);
                 }
             }
         });
@@ -186,18 +186,6 @@ public class LobbyViewManager {
             @Override
             public void handle(ActionEvent event) {
                 showSubScene(characterSelectSubScene);
-            }
-        });
-
-        GameButton testButton = new GameButton("TEST");
-        addMenuButton(testButton);
-
-        testButton.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent event) {
-            	for (GameData player : players) {
-            		System.out.println(player.name + ", " + player.character.getColor());
-            	}
             }
         });
     }
@@ -215,10 +203,10 @@ public class LobbyViewManager {
     }
 
     private void createSendButton() {
-        GameButton startButton = new GameButton("Send");
-        addMenuButton(startButton);
+        GameButton sendButton = new GameButton("Send");
+        addMenuButton(sendButton);
 
-        startButton.setOnAction(new EventHandler<ActionEvent>() {
+        sendButton.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
             	client.sendChat(chatInput.getText());
