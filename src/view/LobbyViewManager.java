@@ -256,9 +256,6 @@ public class LobbyViewManager {
     	server = new GameServer(port, ip);
     	server.start();
     	client = new GameClient(ip, port, this::onMessageReceived, name);
-        GameServer server = new GameServer(port, ip);
-        server.start();
-        client = new GameClient(ip, port, this::onMessageReceived, name);
     }
 
     private void joinServer(String ip, int port) {
@@ -269,10 +266,6 @@ public class LobbyViewManager {
         Platform.runLater(() -> {
             if (data.type.equals("chat")) {
                 chatLog.appendText(data.msg + '\n');
-
-                for (GameData player : players) {
-                    System.out.println(player.lives + player.name);
-                }
             } else if (data.type.equals("player")) {
                 if (players[data.playerNum] == null) {
                     players[data.playerNum] = new GameData();
