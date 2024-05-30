@@ -9,4 +9,5 @@ public class GameData {
 	public int lives;
 	public int xpos;
 	public int ypos;
+	public boolean ready = false;
 }

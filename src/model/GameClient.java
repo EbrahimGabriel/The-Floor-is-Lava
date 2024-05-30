@@ -43,7 +43,7 @@ public class GameClient {
         this.receivePlayerNum();
         // wait for server to have 4 players
         this.waitServer();
-        this.sendPlayerData(CHARACTER.BLUE, name);
+        this.sendPlayerData(CHARACTER.BLUE, name, false);
 
         new Thread(() -> {
         	while (true) {
@@ -65,8 +65,8 @@ public class GameClient {
 		}
     }
     //CLIENT SENDING PLAYER DATA (character, nickname)
-    public void sendPlayerData(CHARACTER character, String name) {
-    	String msg = "player|" + playerNum + " " + name + " " + character.getColor();
+    public void sendPlayerData(CHARACTER character, String name, boolean ready) {
+    	String msg = "player|" + playerNum + " " + name + " " + character.getColor() + " " + ready;
         buf = msg.getBytes();
         DatagramPacket packet
           = new DatagramPacket(buf, buf.length, serverAddress, serverPort); //PORT
@@ -81,6 +81,19 @@ public class GameClient {
     public void sendGameData(int lives, int xpos, int ypos) {
     	String msg = "game|" + playerNum + " " + lives + " " + xpos + " " + ypos;
         buf = msg.getBytes();
+        DatagramPacket packet
+          = new DatagramPacket(buf, buf.length, serverAddress, serverPort); //PORT
+
+        try {
+			socket.send(packet);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+    }
+
+    public void sendGameStart() {
+    	String msg = "gamestart|lol";
+    	buf = msg.getBytes();
         DatagramPacket packet
           = new DatagramPacket(buf, buf.length, serverAddress, serverPort); //PORT
 
@@ -149,11 +162,14 @@ public class GameClient {
     		if (info[2].equals("red")) data.character = CHARACTER.RED;
     		if (info[2].equals("yellow")) data.character = CHARACTER.YELLOW;
     		if (info[2].equals("green")) data.character = CHARACTER.GREEN;
+    		data.ready = Boolean.parseBoolean(info[3]);
     	} else if (temp[0].equals("game")) {
     		data.playerNum = Integer.parseInt(info[0]);
     		data.lives = Integer.parseInt(info[1]);
     		data.xpos = Integer.parseInt(info[2]);
     		data.ypos = Integer.parseInt(info[3]);
+    	} else if (temp[0].equals("gamestart")) {
+    		data.ready = true; // ready = true meaning its time to go
     	} else if (temp[0].equals("tile")) {
     		data.xpos = Integer.parseInt(temp[1]); //placing tile data at xpos because im too lazy to make another field
     	} else if (temp[0].equals("gameend")) {

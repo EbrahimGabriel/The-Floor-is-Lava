@@ -3,6 +3,7 @@ package view;
 import java.util.ArrayList;
 import java.util.List;
 
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.Scene;
@@ -52,6 +53,7 @@ public class LobbyViewManager {
 
     private GameClient client;
     private String name;
+    private boolean ready = false;
 
     GameData[] players = new GameData[2];
 
@@ -118,7 +120,9 @@ public class LobbyViewManager {
         chooseCharacterLabel.setLayoutY(25);
         characterSelectSubScene.getPane().getChildren().add(chooseCharacterLabel);
         characterSelectSubScene.getPane().getChildren().add(createCharactersToSelect());
-        characterSelectSubScene.getPane().getChildren().add(createPlayButton());
+
+        // only host can see the play button
+        if (client.getPlayerNum() == 0) characterSelectSubScene.getPane().getChildren().add(createPlayButton());
     }
 
     private HBox createCharactersToSelect() {
@@ -139,7 +143,7 @@ public class LobbyViewManager {
                     characterToPick.setIsCharacterChosen(true);
                     chosenCharacter = characterToPick.getCharacter();
                     // updates your character in other clients
-                    client.sendPlayerData(chosenCharacter, name);
+                    client.sendPlayerData(chosenCharacter, name, ready);
                 }
             });
         }
@@ -159,6 +163,15 @@ public class LobbyViewManager {
         createStartButton();
         createExitButton();
         createSendButton();
+        createReadyButton();
+    }
+
+    // starts the game simultaneously
+    private void startGame() {
+    	Platform.runLater(() -> {;
+    	GameViewManager gameManager = new GameViewManager(client, players);
+    	gameManager.createNewGame(lobbyStage);
+    	});
     }
 
     private GameButton createPlayButton() {
@@ -169,10 +182,11 @@ public class LobbyViewManager {
         playButton.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-                if (chosenCharacter != null) {
-                    GameViewManager gameManager = new GameViewManager(client, players);
-                    gameManager.createNewGame(lobbyStage);
-                }
+            	boolean allReady = true;
+            	for (GameData player : players) {
+            		if (!player.ready) allReady = false;
+            	}
+            	if (allReady) client.sendGameStart();
             }
         });
         return playButton;
@@ -202,6 +216,7 @@ public class LobbyViewManager {
         });
     }
 
+    // for sending messages, ideally it should just be pressing enter
     private void createSendButton() {
         GameButton sendButton = new GameButton("Send");
         addMenuButton(sendButton);
@@ -210,6 +225,21 @@ public class LobbyViewManager {
             @Override
             public void handle(ActionEvent event) {
             	client.sendChat(chatInput.getText());
+            	chatInput.clear();
+            }
+        });
+    }
+
+    private void createReadyButton() {
+        GameButton sendButton = new GameButton("Ready");
+        addMenuButton(sendButton);
+
+        sendButton.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+            	ready = !ready;
+            	// UPDATE ICON OF CHECKMARK HERE!
+            	client.sendPlayerData(chosenCharacter, name, ready);
             }
         });
     }
@@ -269,6 +299,11 @@ public class LobbyViewManager {
     		players[data.playerNum].playerNum = data.playerNum;
     		players[data.playerNum].name = data.name;
     		players[data.playerNum].character = data.character;
+    		players[data.playerNum].ready = data.ready;
+    	}
+
+    	else if (data.type.equals("gamestart")) {
+    		startGame();
     	}
     	// no game data should be received at this point
     }
