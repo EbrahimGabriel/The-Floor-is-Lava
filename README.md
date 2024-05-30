@@ -13,7 +13,7 @@ This is a simple 2D JavaFX Networking Game. The game revolves around the concept
 
 ## Game Sample
 ### Title Screen
-![Title Screen](src\view\resources\background_2.jpg)
+![Title Screen](src/view/resources/background_2.jpg)
 ### Lobby with Chat Features
 ![Lobby]()
 ### Gameplay Loop
