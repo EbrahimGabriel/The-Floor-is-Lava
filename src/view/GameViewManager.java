@@ -178,7 +178,7 @@ public class GameViewManager {
             public void handle(long now) {
                 moveCharacter();
                 checkIfElementsCollide();
-//                checkPlayerCollisions();
+                checkPlayerCollisions();
             }
         };
 
