@@ -255,10 +255,17 @@ public class LobbyViewManager {
     private void onMessageReceived(GameData data) {
     	if (data.type.equals("chat")) {
     	  	chatLog.appendText(data.msg + '\n');
-    	}
+
+    	  	for (GameData player : players) {
+        	  	System.out.println(player.lives+player.name);
+    	  	}
+	  	}
 
     	else if (data.type.equals("player")) {
-    		if (players[data.playerNum] == null) players[data.playerNum] = new GameData();
+    		if (players[data.playerNum] == null) {
+    			players[data.playerNum] = new GameData();
+    			players[data.playerNum].lives = 3;
+    		}
     		players[data.playerNum].playerNum = data.playerNum;
     		players[data.playerNum].name = data.name;
     		players[data.playerNum].character = data.character;

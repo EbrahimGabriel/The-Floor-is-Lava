@@ -91,6 +91,34 @@ public class GameClient {
 		}
     }
 
+    //HOST CLIENT SENDING WHICH LAVA TILE SPAWNED
+    public void sendTileData(int tileToReplace) {
+    	String msg = "tile|" + tileToReplace;
+    	buf = msg.getBytes();
+        DatagramPacket packet
+          = new DatagramPacket(buf, buf.length, serverAddress, serverPort); //PORT
+
+        try {
+			socket.send(packet);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+    }
+
+    //CLIENT SENDING IF SOMEONE WON
+    public void sendGameEnd(int winnerNum) {
+    	String msg = "gameend|" + winnerNum;
+    	buf = msg.getBytes();
+        DatagramPacket packet
+          = new DatagramPacket(buf, buf.length, serverAddress, serverPort); //PORT
+
+        try {
+			socket.send(packet);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+    }
+
     public GameData receiveData() {
     	buf = new byte[8192];
     	DatagramPacket packet = new DatagramPacket(buf, buf.length);
@@ -126,6 +154,10 @@ public class GameClient {
     		data.lives = Integer.parseInt(info[1]);
     		data.xpos = Integer.parseInt(info[2]);
     		data.ypos = Integer.parseInt(info[3]);
+    	} else if (temp[0].equals("tile")) {
+    		data.xpos = Integer.parseInt(temp[1]); //placing tile data at xpos because im too lazy to make another field
+    	} else if (temp[0].equals("gameend")) {
+    		data.playerNum = Integer.parseInt(temp[1]); // placing winnerNum at playerNum because ^
     	}
 
     	return data;

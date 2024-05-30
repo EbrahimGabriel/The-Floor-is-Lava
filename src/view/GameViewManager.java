@@ -56,8 +56,10 @@ public class GameViewManager {
     private Timeline lavaSpawnTimeline;
 
     private ImageView[] playerLives;
-    private int playerLife;
+    private int playerLife = 3;
     private int playerNum;
+    private int winnerNum;
+    private boolean gameEnded = false;
 //    private int killCount = 2;
 
     // -- networking related --
@@ -107,7 +109,7 @@ public class GameViewManager {
         gamePane.setBackground(new Background(background));
     }
 
-    // set the UI, UPDATE TO MATCH PLAYER
+    // set the UI
     private void createGameElements() {
         playerLife = 3;
         playerLives = new ImageView[3];
@@ -204,6 +206,7 @@ public class GameViewManager {
 
     // create the game over screen, possibly needs update
     private void showGameOverPopup() {
+    	if (gameEnded) return;
         // Load the image
         Image image = new Image(BACKGROUND_IMAGE_GAMEOVER);
         ImageView imageView = new ImageView(image);
@@ -242,18 +245,34 @@ public class GameViewManager {
             stackPane.toFront();  // bring the game over popup to the front
         });
 
-        lavaSpawnTimeline.stop();
+        if (playerNum == 0) lavaSpawnTimeline.stop();
+        gameEnded = true;
+        System.out.println(players[winnerNum].name + " has won the game");
     }
 
-    // UPDATE TO ONLY CHECK FOR CURRENT PLAYER CHARACTER
+    // UPDATE TO ONLY CHECK FOR CURRENT PLAYER CHARACTER; LET SERVER TELL CLIENTS IF GAME ENDED
     private void removeLife() {
         playerLife--;
         gamePane.getChildren().remove(playerLives[playerLife]);
+
+        client.sendGameData(playerLife, (int) characters[playerNum].getLayoutX(), (int) characters[playerNum].getLayoutY());
         if(playerLife <= 0) {
-            gameTimer.stop();
-            showGameOverPopup();
+    		gamePane.getChildren().remove(characters[playerNum]);
+        	characters[playerNum].setVisible(false);
+        	gameTimer.stop();
         }
-       client.sendGameData(playerLife, (int) characters[playerNum].getLayoutX(), (int) characters[playerNum].getLayoutY());
+
+    }
+
+    private boolean checkWinner() {
+    	int count = 0;
+    	for (GameData player : players) {
+    		if (player.lives == 0) count++;
+    		else winnerNum = player.playerNum;
+    		System.out.println(player.lives+player.name);
+    	}
+    	if (count == 1) return true;
+    	return false;
     }
 
     // UPDATE TO ONLY CHECK FOR CURRENT PLAYER CHARACTER
@@ -285,7 +304,7 @@ public class GameViewManager {
     }
 
 
-    // spawns the normal tiles SYNCHRONIZE TILES WITH EVERYONE ELSE!
+    // spawns the normal tiles
     private void createNormalTiles() {
         int tileSize = 100;
         int topPadding = 100;
@@ -318,28 +337,33 @@ public class GameViewManager {
         lavaSpawnTimeline.play();
     }
 
-    // finds an area to spawn a lava tile in SYNCHRONIZE TILES WITH EVERYONE ELSE!
     private void spawnLavaTile() {
-        int tileSize = 100;
-        Image lavaImage = new Image(getClass().getResourceAsStream("/view/resources/lava.png"));
-        ImageView lavaTile = new ImageView(lavaImage);
-        lavaTile.setFitWidth(tileSize);
-        lavaTile.setFitHeight(tileSize);
-
-        // Filter to find normal tiles
+    	// Filter to find normal tiles
         List<ImageView> normalTiles = gamePane.getChildren().stream()
             .filter(node -> node instanceof ImageView && "normal_tile".equals(node.getUserData()))
             .map(node -> (ImageView) node)
             .collect(Collectors.toList());
 
-        // Debugging: Check if normalTiles is null or empty
-        if (normalTiles == null || normalTiles.isEmpty()) {
+        // Choose a random normal tile to replace
+        int tileToReplace = (int) (Math.random() * normalTiles.size());
+
+        // send tile data to replace!
+        client.sendTileData(tileToReplace);
+    }
+    // replaces normal tile with lava tile
+    private void replaceTile(int tileToReplace) {
+        List<ImageView> normalTiles = gamePane.getChildren().stream()
+                .filter(node -> node instanceof ImageView && "normal_tile".equals(node.getUserData()))
+                .map(node -> (ImageView) node)
+                .collect(Collectors.toList());
+
+     // Debugging: Check if normalTiles is null or empty
+        if (normalTiles == null || normalTiles.isEmpty() || normalTiles.size() == 0) {
             System.err.println("No normal tiles found to replace with lava tiles.");
             return; // Exit early if no normal tiles are found
         }
 
-        // Choose a random normal tile to replace
-        ImageView normalTile = normalTiles.get((int) (Math.random() * normalTiles.size()));
+        ImageView normalTile = normalTiles.get(tileToReplace);
 
         // Debugging: Ensure normalTile is not null
         if (normalTile == null) {
@@ -347,12 +371,20 @@ public class GameViewManager {
             return; // Exit early if the selected normal tile is null
         }
 
+    	int tileSize = 100;
+        Image lavaImage = new Image(getClass().getResourceAsStream("/view/resources/lava.png"));
+        ImageView lavaTile = new ImageView(lavaImage);
+        lavaTile.setFitWidth(tileSize);
+        lavaTile.setFitHeight(tileSize);
+
         // Replace the normal tile with a lava tile
         lavaTile.setLayoutX(normalTile.getLayoutX());
         lavaTile.setLayoutY(normalTile.getLayoutY());
         lavaTile.setUserData("lava_tile"); // Set user data to identify as lava tile
-        gamePane.getChildren().remove(normalTile);
-        gamePane.getChildren().add(lavaTile);
+        Platform.runLater(() -> {
+            gamePane.getChildren().remove(normalTile);
+            gamePane.getChildren().add(lavaTile);
+        });
     }
 
 
@@ -411,6 +443,23 @@ public class GameViewManager {
     		players[data.playerNum].lives = data.lives;
     		players[data.playerNum].xpos = data.xpos;
     		players[data.playerNum].ypos = data.ypos;
+
+    		if (data.lives == 0) {
+    			Platform.runLater(() -> {
+        			gamePane.getChildren().remove(characters[data.playerNum]);
+    			});
+    			if (checkWinner()) {
+                	client.sendGameEnd(winnerNum);
+                }
+    		}
+    	}
+
+    	else if (data.type.equals("tile")) {
+    		replaceTile(data.xpos); // im just using xpos to reuse
+    	}
+
+    	else if (data.type.equals("gameend")) {
+            showGameOverPopup();
     	}
     }
 }
