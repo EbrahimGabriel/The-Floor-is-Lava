@@ -55,6 +55,7 @@ public class LobbyViewManager {
     private TextField chatInput;
     private TextArea chatLog;
 
+    private GameServer server;
     private GameClient client;
     private String name;
     private boolean ready = false;
@@ -207,6 +208,9 @@ public class LobbyViewManager {
             @Override
             public void handle(ActionEvent event) {
                 lobbyStage.close();
+                client.close();
+                if (server != null) server.close();
+                menuStage.show();
             }
         });
     }
@@ -249,6 +253,9 @@ public class LobbyViewManager {
     }
 
     private void createServer(String ip, int port) {
+    	server = new GameServer(port, ip);
+    	server.start();
+    	client = new GameClient(ip, port, this::onMessageReceived, name);
         GameServer server = new GameServer(port, ip);
         server.start();
         client = new GameClient(ip, port, this::onMessageReceived, name);

@@ -34,6 +34,7 @@ import model.CHARACTER;
 import model.GameButton;
 import model.GameClient;
 import model.GameData;
+import model.InfoLabel;
 
 public class GameViewManager {
 
@@ -144,8 +145,24 @@ public class GameViewManager {
     // create sprites for each player
     private void createCharacters(GameData[] players) {
     	for (GameData player : players) {
-    		player.xpos = WINDOW_WIDTH/2 + (100 - (50 * player.playerNum));
-    		player.ypos = WINDOW_HEIGHT/2;
+    		if (player.playerNum == 0) {
+    			player.xpos = WINDOW_WIDTH/2 + 100;
+        		player.ypos = WINDOW_HEIGHT/2 + 100;
+    		}
+    		else if (player.playerNum == 1) {
+    			player.xpos = WINDOW_WIDTH/2 - 100;
+        		player.ypos = WINDOW_HEIGHT/2 + 100;
+    		}
+
+    		else if (player.playerNum == 2) {
+    			player.xpos = WINDOW_WIDTH/2 - 100;
+        		player.ypos = WINDOW_HEIGHT/2 - 100;
+    		}
+
+    		else if (player.playerNum == 3) {
+    			player.xpos = WINDOW_WIDTH/2 + 100;
+        		player.ypos = WINDOW_HEIGHT/2 - 100;
+    		}
     		characters[player.playerNum] = new ImageView(player.character.getUrl());
     		characters[player.playerNum].setLayoutX(player.xpos);
     		characters[player.playerNum].setLayoutY(player.ypos);
@@ -161,6 +178,7 @@ public class GameViewManager {
             public void handle(long now) {
                 moveCharacter();
                 checkIfElementsCollide();
+                checkPlayerCollisions();
             }
         };
 
@@ -214,7 +232,8 @@ public class GameViewManager {
         // Set the size of the image view
         imageView.setFitWidth(500);  // width of a typical dialog box
         imageView.setFitHeight(300);
-
+        InfoLabel label = new InfoLabel(players[winnerNum].name + " wins!");
+        label.setLayoutY(100);
         // Create the main menu button using GameButton
         GameButton lobbyButton = new GameButton("Back to Lobby");
         lobbyButton.setOnAction(event -> {
@@ -234,7 +253,7 @@ public class GameViewManager {
         vbox.setPadding(new Insets(0, 0, 40, 0)); // Add 20px padding at the bottom
 
         // Create a StackPane to hold the image view and VBox
-        StackPane stackPane = new StackPane(imageView, vbox);
+        StackPane stackPane = new StackPane(imageView, vbox, label);
 
         // Position the stack pane
         stackPane.setLayoutX(WINDOW_WIDTH / 2 - imageView.getFitWidth() / 2);
@@ -247,10 +266,8 @@ public class GameViewManager {
 
         if (playerNum == 0) lavaSpawnTimeline.stop();
         gameEnded = true;
-        System.out.println(players[winnerNum].name + " has won the game");
     }
 
-    // UPDATE TO ONLY CHECK FOR CURRENT PLAYER CHARACTER; LET SERVER TELL CLIENTS IF GAME ENDED
     private void removeLife() {
         playerLife--;
         gamePane.getChildren().remove(playerLives[playerLife]);
@@ -269,13 +286,11 @@ public class GameViewManager {
     	for (GameData player : players) {
     		if (player.lives == 0) count++;
     		else winnerNum = player.playerNum;
-    		System.out.println(player.lives+player.name);
     	}
     	if (count == 1) return true;
     	return false;
     }
 
-    // UPDATE TO ONLY CHECK FOR CURRENT PLAYER CHARACTER
     private void checkIfElementsCollide() {
         if (isInvincible) {
             return;
@@ -293,6 +308,23 @@ public class GameViewManager {
                 }
             }
         }
+    }
+
+    private void checkPlayerCollisions() {
+    	for (GameData player : players) {
+    		if (playerNum == player.playerNum) continue;
+    		if (characters[playerNum].getBoundsInParent().intersects(characters[player.playerNum].getBoundsInParent())) {
+    			int moveX = 0, moveY = 0;
+    			if (characters[playerNum].getLayoutX() < characters[player.playerNum].getLayoutX()) moveX = -5;
+    			else moveX = 5;
+
+    			if (characters[playerNum].getLayoutY() < characters[player.playerNum].getLayoutY()) moveY = -5;
+    			else moveY = 5;
+
+    			client.sendPushData(playerNum, (int) characters[playerNum].getLayoutX() + moveX, (int) characters[playerNum].getLayoutY() + moveY);
+    			client.sendPushData(player.playerNum, (int) characters[player.playerNum].getLayoutX() - moveX, (int) characters[player.playerNum].getLayoutY() - moveY);
+    		}
+    	}
     }
 
     // start invincibility period for 1 second
@@ -452,6 +484,13 @@ public class GameViewManager {
                 	client.sendGameEnd(winnerNum);
                 }
     		}
+    	}
+
+    	else if (data.type.equals("push")) {
+    		characters[data.playerNum].setLayoutX(data.xpos);
+    		characters[data.playerNum].setLayoutY(data.ypos);
+    		players[data.playerNum].xpos = data.xpos;
+    		players[data.playerNum].ypos = data.ypos;
     	}
 
     	else if (data.type.equals("tile")) {
