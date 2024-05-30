@@ -100,6 +100,7 @@ public class GameServer extends Thread {
     }
 
     public void close() {
+    	running = false;
     	socket.close();
     }
 }

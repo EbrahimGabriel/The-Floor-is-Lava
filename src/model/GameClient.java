@@ -91,6 +91,19 @@ public class GameClient {
 		}
     }
 
+    public void sendPushData(int playerNum, int xpos, int ypos) {
+    	String msg = "push|" + playerNum + " " + xpos + " " + ypos;
+        buf = msg.getBytes();
+        DatagramPacket packet
+          = new DatagramPacket(buf, buf.length, serverAddress, serverPort); //PORT
+
+        try {
+			socket.send(packet);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+    }
+
     public void sendGameStart() {
     	String msg = "gamestart|lol";
     	buf = msg.getBytes();
@@ -163,6 +176,10 @@ public class GameClient {
     		if (info[2].equals("yellow")) data.character = CHARACTER.YELLOW;
     		if (info[2].equals("green")) data.character = CHARACTER.GREEN;
     		data.ready = Boolean.parseBoolean(info[3]);
+    	} else if (temp[0].equals("push")) {
+    		data.playerNum = Integer.parseInt(info[0]);
+    		data.xpos = Integer.parseInt(info[1]);
+    		data.ypos = Integer.parseInt(info[2]);
     	} else if (temp[0].equals("game")) {
     		data.playerNum = Integer.parseInt(info[0]);
     		data.lives = Integer.parseInt(info[1]);

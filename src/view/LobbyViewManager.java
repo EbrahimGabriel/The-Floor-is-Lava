@@ -51,6 +51,7 @@ public class LobbyViewManager {
     private TextField chatInput;
     private TextArea chatLog;
 
+    private GameServer server;
     private GameClient client;
     private String name;
     private boolean ready = false;
@@ -212,6 +213,9 @@ public class LobbyViewManager {
             @Override
             public void handle(ActionEvent event) {
                 lobbyStage.close();
+                client.close();
+                if (server != null) server.close();
+                menuStage.show();
             }
         });
     }
@@ -273,7 +277,7 @@ public class LobbyViewManager {
     // ------ networking stuff --------
 
     private void createServer(String ip, int port) {
-    	GameServer server = new GameServer(port, ip);
+    	server = new GameServer(port, ip);
     	server.start();
     	client = new GameClient(ip, port, this::onMessageReceived, name);
     }
@@ -285,10 +289,6 @@ public class LobbyViewManager {
     private void onMessageReceived(GameData data) {
     	if (data.type.equals("chat")) {
     	  	chatLog.appendText(data.msg + '\n');
-
-    	  	for (GameData player : players) {
-        	  	System.out.println(player.lives+player.name);
-    	  	}
 	  	}
 
     	else if (data.type.equals("player")) {
