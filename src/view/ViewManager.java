@@ -61,8 +61,8 @@ public class ViewManager {
 
         createBackground();
         createSubScenes();
-        // createBackgroundBehindButtons();
         createButtons();
+        // createBackgroundBehindButtons();
     }
 
     public Stage getMainStage() {
@@ -134,7 +134,7 @@ public class ViewManager {
     }
 
     private void createButtons() {
-        createStartButton();
+        createMultiplayerButton();
         createHelpButton();
         createCreditsButton();
         createExitButton();
@@ -190,11 +190,24 @@ public class ViewManager {
     	return joinButton;
     }
 
-    private void createStartButton() {
-        GameButton startButton = new GameButton("Start");
-        addMenuButton(startButton);
+    // trying to start single player game here
+    // private void createStartButton() {
+    //     GameButton startButton = new GameButton("Start");
+    //     addMenuButton(startButton);
 
-        startButton.setOnAction(new EventHandler<ActionEvent>() {
+    //     startButton.setOnAction(new EventHandler<ActionEvent>() {
+    //         @Override
+    //         public void handle(ActionEvent event) {
+    //             showSubScene(playSubScene);
+    //         }
+    //     });
+    // }
+
+    private void createMultiplayerButton() {
+        GameButton multiplayerButton = new GameButton("Multiplayer");
+        addMenuButton(multiplayerButton);
+
+        multiplayerButton.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
                 showSubScene(lobbySubScene);
@@ -219,10 +232,12 @@ public class ViewManager {
     private void createCreditsButton() {
         GameButton creditsButton = new GameButton("Credits");
         addMenuButton(creditsButton);
-
+    
         creditsButton.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
+                ImageView imageView = new ImageView(new Image("/model/resources/credits_500x300.jpg"));
+                creditsSubScene.getPane().getChildren().add(imageView);
                 showSubScene(creditsSubScene);
             }
         });
