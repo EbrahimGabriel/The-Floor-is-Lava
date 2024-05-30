@@ -66,7 +66,7 @@ public class GameViewManager {
     // -- networking related --
     private GameClient client;
     private GameData[] players;
-    private ImageView[] characters = new ImageView[2];
+    private ImageView[] characters = new ImageView[4];
 
 
     public GameViewManager(GameClient client, GameData[] players) {
@@ -287,7 +287,7 @@ public class GameViewManager {
     		if (player.lives == 0) count++;
     		else winnerNum = player.playerNum;
     	}
-    	if (count == 1) return true;
+    	if (count == 3) return true;
     	return false;
     }
 

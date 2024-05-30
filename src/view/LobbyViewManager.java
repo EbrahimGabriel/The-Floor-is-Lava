@@ -60,9 +60,9 @@ public class LobbyViewManager {
     private String name;
     private boolean ready = false;
 
-    GameData[] players = new GameData[2];
+    GameData[] players = new GameData[4];
 
-    private Label[] playerLabels = new Label[2];
+    private Label[] playerLabels = new Label[4];
 
     public LobbyViewManager(String type, String ip, int port, String name) {
         this.name = name;

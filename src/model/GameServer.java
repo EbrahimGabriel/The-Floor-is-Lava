@@ -33,7 +33,7 @@ public class GameServer extends Thread {
 
         // Wait for 4 clients to connect (this includes the server!)
     	int count = 0;
-        while (clients.size() < 2) {
+        while (clients.size() < 4) {
             try {
 				socket.receive(packet);
 			} catch (IOException e1) {
