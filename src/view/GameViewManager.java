@@ -178,7 +178,7 @@ public class GameViewManager {
             public void handle(long now) {
                 moveCharacter();
                 checkIfElementsCollide();
-                checkPlayerCollisions();
+//                checkPlayerCollisions();
             }
         };
 
@@ -362,7 +362,7 @@ public class GameViewManager {
         }
     }
 
-    // spawns lava tiles randomly every 2 seconds SYNCHRONIZE TILES WITH EVERYONE ELSE!
+    // spawns lava tiles randomly every 2 seconds
     private void createLavaTiles() {
         lavaSpawnTimeline = new Timeline(new KeyFrame(Duration.seconds(2), event -> spawnLavaTile()));
         lavaSpawnTimeline.setCycleCount(Timeline.INDEFINITE);

@@ -44,7 +44,7 @@ public class GameServer extends Thread {
             InetAddress address = packet.getAddress();
             int port = packet.getPort();
             for (Client client : clients) {
-            	if (client.getClientAddress() == address && client.getClientPort() == port) exists = true;
+            	if (client.getClientAddress().equals(address) && client.getClientPort() == port) exists = true;
             }
 
             if (!exists) {
