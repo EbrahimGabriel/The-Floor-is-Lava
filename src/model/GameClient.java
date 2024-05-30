@@ -14,6 +14,8 @@ public class GameClient {
     private int serverPort;
     private String name;
     private int playerNum;
+    private Consumer<GameData> lobbyOnMessageReceived;
+    private Consumer<GameData> gameOnMessageReceived;
     private Consumer<GameData> onMessageReceived;
 
     private byte[] buf = new byte[8192];
@@ -23,6 +25,7 @@ public class GameClient {
     public GameClient(String ip, int port, Consumer<GameData> onMessageReceived, String name) {
     	this.name = name;
     	this.onMessageReceived = onMessageReceived;
+    	this.setLobbyConsumer(onMessageReceived); // on init, it uses the lobby consumer
         try {
 			this.socket = new DatagramSocket();
 		} catch (SocketException e) {
@@ -158,8 +161,20 @@ public class GameClient {
     	ready = true;
     }
 
-    public void updateConsumer(Consumer<GameData> onMessageReceived) {
-    	this.onMessageReceived = onMessageReceived;
+    public void setLobbyConsumer(Consumer<GameData> consumer) {
+    	this.lobbyOnMessageReceived = consumer;
+    }
+
+    public void setGameConsumer(Consumer<GameData> consumer) {
+    	this.gameOnMessageReceived = consumer;
+    }
+
+    public void useLobbyConsumer() {
+    	this.onMessageReceived = this.lobbyOnMessageReceived;
+    }
+
+    public void useGameConsumer() {
+    	this.onMessageReceived = this.gameOnMessageReceived;
     }
 
     public int getPlayerNum() {

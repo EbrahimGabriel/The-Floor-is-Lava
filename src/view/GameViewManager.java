@@ -43,7 +43,7 @@ public class GameViewManager {
     private Pane gamePane;
     private Scene gameScene;
     private Stage gameStage;
-    private Stage menuStage;
+    private Stage lobbyStage;
 
     private boolean isUpPressed;
     private boolean isDownPressed;
@@ -70,7 +70,9 @@ public class GameViewManager {
         initializeStage();
         this.client = client;
         this.players = players;
-        this.client.updateConsumer(this::onMessageReceived);
+        //use game view's consumer to receive game data
+        this.client.setGameConsumer(this::onMessageReceived);
+        this.client.useGameConsumer();
         this.playerNum = this.client.getPlayerNum();
         createKeyListeners();
     }
@@ -83,14 +85,14 @@ public class GameViewManager {
         gameStage.setResizable(false);
     }
 
-    public void createNewGame(Stage menuStage) {
-        this.menuStage = menuStage;
-        this.menuStage.hide();
+    public void createNewGame(Stage lobbyStage) {
+        this.lobbyStage = lobbyStage;
+        this.lobbyStage.hide();
         createBackground();
         createCharacters(players);
         createGameElements();
         createNormalTiles();
-        createLavaTiles();
+        if (client.getPlayerNum() == 0) createLavaTiles();
         createGameLoop();
         gameStage.show();
         for (ImageView character : characters) {
@@ -165,7 +167,7 @@ public class GameViewManager {
 
     // moves the character, UPDATE TO ONLY AFFECT OWN PLAYER CHARACTER
     private void moveCharacter() {
-        int tileSize = 100;
+//        int tileSize = 100;
         int topPadding = 100;
         int bottomPadding = 88;
         int leftPadding = 70;
@@ -211,19 +213,20 @@ public class GameViewManager {
         imageView.setFitHeight(300);
 
         // Create the main menu button using GameButton
-        GameButton mainMenuButton = new GameButton("Main Menu");
-        mainMenuButton.setOnAction(event -> {
+        GameButton lobbyButton = new GameButton("Back to Lobby");
+        lobbyButton.setOnAction(event -> {
+            client.useLobbyConsumer();
             gameStage.close(); // close the game stage
-            menuStage.show();
+            lobbyStage.show();
         });
 
-        mainMenuButton.setTextFill(Color.DARKGRAY);
+        lobbyButton.setTextFill(Color.DARKGRAY);
 
         // Create a spacer with VBox layout
         VBox spacer = new VBox();
         VBox.setVgrow(spacer, Priority.ALWAYS);
 
-        VBox vbox = new VBox(10, spacer, mainMenuButton);
+        VBox vbox = new VBox(10, spacer, lobbyButton);
         vbox.setAlignment(Pos.CENTER);
         vbox.setPadding(new Insets(0, 0, 40, 0)); // Add 20px padding at the bottom
 

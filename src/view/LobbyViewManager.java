@@ -264,7 +264,7 @@ public class LobbyViewManager {
     		players[data.playerNum].character = data.character;
     	}
     	// no game data should be received at this point
-  }
+    }
 
     private void createChat() {
         chatInput = new TextField();
