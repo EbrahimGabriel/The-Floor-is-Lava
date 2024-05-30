@@ -7,13 +7,17 @@ import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.Scene;
+import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.text.Font;
 import javafx.stage.Stage;
 import model.CHARACTER;
 import model.CharacterSelect;
@@ -25,7 +29,7 @@ import model.GameSubScene;
 import model.InfoLabel;
 
 public class LobbyViewManager {
-	private static final int HEIGHT = 540;
+    private static final int HEIGHT = 540;
     private static final int WIDTH = 960;
 
     private AnchorPane lobbyPane;
@@ -46,7 +50,7 @@ public class LobbyViewManager {
     List<GameButton> lobbyButtons;
 
     List<CharacterSelect> characterList;
-    private CHARACTER chosenCharacter = CHARACTER.BLUE; //default is blue
+    private CHARACTER chosenCharacter = CHARACTER.BLUE; // default is blue
 
     private TextField chatInput;
     private TextArea chatLog;
@@ -57,40 +61,41 @@ public class LobbyViewManager {
 
     GameData[] players = new GameData[2];
 
-    public LobbyViewManager(String type, String ip, int port, String name) {
-    	this.name = name;
-    	if (type == "create") {
-    		createServer(ip, port);
-    	}
+    private Label[] playerLabels = new Label[2];
 
-    	else if (type == "join") {
-    		joinServer(ip, port);
-    	}
-    	initializeLobby();
+    public LobbyViewManager(String type, String ip, int port, String name) {
+        this.name = name;
+        if (type.equals("create")) {
+            createServer(ip, port);
+        } else if (type.equals("join")) {
+            joinServer(ip, port);
+        }
+        initializeLobby();
     }
 
     private void initializeLobby() {
         lobbyButtons = new ArrayList<>();
         lobbyPane = new AnchorPane();
-        lobbyScene = new Scene(lobbyPane,WIDTH,HEIGHT);
+        lobbyScene = new Scene(lobbyPane, WIDTH, HEIGHT);
         lobbyStage = new Stage();
         lobbyStage.setScene(lobbyScene);
         lobbyStage.setResizable(false);
 
         createBackground();
         createSubScenes();
-        // createBackgroundBehindButtons();
-
-        createButtons();
         createChat();
-    	while (!client.ready) {continue;}
+        createButtons();
+        createPlayerNameLabel(); // Add this line
+        createPlayerLabels(); // Add this line
+        showSubScene(characterSelectSubScene);
+        while (!client.ready) {
+            continue;
+        }
     }
 
     public void createLobby(Stage menuStage) {
         this.menuStage = menuStage;
         this.menuStage.hide();
-//        this.chosenCharacter = chosenCharacter;
-//        createBackground();
         lobbyStage.show();
     }
 
@@ -104,7 +109,6 @@ public class LobbyViewManager {
     }
 
     private void createSubScenes() {
-
         playSubScene = new GameSubScene();
         lobbyPane.getChildren().add(playSubScene);
 
@@ -121,15 +125,16 @@ public class LobbyViewManager {
         characterSelectSubScene.getPane().getChildren().add(chooseCharacterLabel);
         characterSelectSubScene.getPane().getChildren().add(createCharactersToSelect());
 
-        // only host can see the play button
-        if (client.getPlayerNum() == 0) characterSelectSubScene.getPane().getChildren().add(createPlayButton());
+        if (client.getPlayerNum() == 0) {
+            characterSelectSubScene.getPane().getChildren().add(createPlayButton());
+        }
     }
 
     private HBox createCharactersToSelect() {
         HBox box = new HBox();
         box.setSpacing(20);
         characterList = new ArrayList<>();
-        for (CHARACTER character: CHARACTER.values()) {
+        for (CHARACTER character : CHARACTER.values()) {
             CharacterSelect characterToPick = new CharacterSelect(character);
             characterList.add(characterToPick);
             box.getChildren().add(characterToPick);
@@ -137,41 +142,37 @@ public class LobbyViewManager {
             characterToPick.setOnMouseClicked(new EventHandler<MouseEvent>() {
                 @Override
                 public void handle(MouseEvent event) {
-                    for (CharacterSelect character: characterList) {
+                    for (CharacterSelect character : characterList) {
                         character.setIsCharacterChosen(false);
                     }
                     characterToPick.setIsCharacterChosen(true);
                     chosenCharacter = characterToPick.getCharacter();
-                    // updates your character in other clients
                     client.sendPlayerData(chosenCharacter, name, ready);
                 }
             });
         }
-        box.setLayoutX(300 - (110*1.6));
+        box.setLayoutX(300 - (110 * 1.6));
         box.setLayoutY(100);
         return box;
     }
 
     private void addMenuButton(GameButton button) {
-        button.setLayoutX(MENU_BUTTON_START_X);
-        button.setLayoutY(MENU_BUTTON_START_Y + lobbyButtons.size() * 70);
+        button.setLayoutX(MENU_BUTTON_START_X + lobbyButtons.size() * 100);
+        button.setLayoutY(MENU_BUTTON_START_Y);
         lobbyButtons.add(button);
-        lobbyPane.getChildren().add(button);
+        characterSelectSubScene.getPane().getChildren().add(button);
     }
 
     private void createButtons() {
-        createStartButton();
-        createExitButton();
-        createSendButton();
         createReadyButton();
+        createExitButton();
     }
 
-    // starts the game simultaneously
     private void startGame() {
-    	Platform.runLater(() -> {;
-    	GameViewManager gameManager = new GameViewManager(client, players);
-    	gameManager.createNewGame(lobbyStage);
-    	});
+        Platform.runLater(() -> {
+            GameViewManager gameManager = new GameViewManager(client, players);
+            gameManager.createNewGame(lobbyStage);
+        });
     }
 
     private GameButton createPlayButton() {
@@ -182,31 +183,25 @@ public class LobbyViewManager {
         playButton.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-            	boolean allReady = true;
-            	for (GameData player : players) {
-            		if (!player.ready) allReady = false;
-            	}
-            	if (allReady) client.sendGameStart();
+                boolean allReady = true;
+                for (GameData player : players) {
+                    if (!player.ready)
+                        allReady = false;
+                }
+                if (allReady)
+                    client.sendGameStart();
             }
         });
         return playButton;
     }
 
-    private void createStartButton() {
-        GameButton startButton = new GameButton("Start");
-        addMenuButton(startButton);
-
-        startButton.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent event) {
-                showSubScene(characterSelectSubScene);
-            }
-        });
-    }
-
     private void createExitButton() {
         GameButton exitButton = new GameButton("Exit");
-        addMenuButton(exitButton);
+        lobbyButtons.add(exitButton);
+        lobbyPane.getChildren().add(exitButton);
+
+        exitButton.setLayoutX(270);
+        exitButton.setLayoutY(430);
 
         exitButton.setOnAction(new EventHandler<ActionEvent>() {
             @Override
@@ -216,105 +211,139 @@ public class LobbyViewManager {
         });
     }
 
-    // for sending messages, ideally it should just be pressing enter
-    private void createSendButton() {
-        GameButton sendButton = new GameButton("Send");
-        addMenuButton(sendButton);
-
-        sendButton.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent event) {
-            	client.sendChat(chatInput.getText());
-            	chatInput.clear();
-            }
-        });
-    }
-
     private void createReadyButton() {
         GameButton sendButton = new GameButton("Ready");
-        addMenuButton(sendButton);
+        lobbyButtons.add(sendButton);
+        lobbyPane.getChildren().add(sendButton);
+
+        sendButton.setLayoutX(80);
+        sendButton.setLayoutY(430);
 
         sendButton.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-            	ready = !ready;
-            	// UPDATE ICON OF CHECKMARK HERE!
-            	client.sendPlayerData(chosenCharacter, name, ready);
+                ready = !ready;
+                client.sendPlayerData(chosenCharacter, name, ready);
             }
         });
     }
 
     private void createBackground() {
         try {
-            String imageUrl = "/view/resources/bg_2.png";
+            String imageUrl = "/view/resources/chat_bg.png";
             Image backgroundImage = new Image(imageUrl);
 
-            // Check if the image loading was successful
             if (backgroundImage.isError()) {
                 throw new RuntimeException("Error loading background image: " + imageUrl);
             }
 
-            // Create and configure the ImageView for the background image
             ImageView backgroundImageView = new ImageView(backgroundImage);
-            // backgroundImageView.setPreserveRatio(true);
-            // backgroundImageView.setSmooth(false);
-            // backgroundImageView.setCache(false);
             backgroundImageView.fitWidthProperty().bind(lobbyPane.widthProperty());
             backgroundImageView.fitHeightProperty().bind(lobbyPane.heightProperty());
 
-            // Add the background image to the mainPane
             lobbyPane.getChildren().add(backgroundImageView);
         } catch (Exception e) {
-            // Print detailed error message
             System.err.println("Error creating background: " + e.getMessage());
             e.printStackTrace();
         }
     }
-    // ------ networking stuff --------
 
     private void createServer(String ip, int port) {
-    	GameServer server = new GameServer(port, ip);
-    	server.start();
-    	client = new GameClient(ip, port, this::onMessageReceived, name);
+        GameServer server = new GameServer(port, ip);
+        server.start();
+        client = new GameClient(ip, port, this::onMessageReceived, name);
     }
 
     private void joinServer(String ip, int port) {
-    	client = new GameClient(ip, port, this::onMessageReceived, name);
+        client = new GameClient(ip, port, this::onMessageReceived, name);
     }
 
     private void onMessageReceived(GameData data) {
-    	if (data.type.equals("chat")) {
-    	  	chatLog.appendText(data.msg + '\n');
+        Platform.runLater(() -> {
+            if (data.type.equals("chat")) {
+                chatLog.appendText(data.msg + '\n');
 
-    	  	for (GameData player : players) {
-        	  	System.out.println(player.lives+player.name);
-    	  	}
-	  	}
-
-    	else if (data.type.equals("player")) {
-    		if (players[data.playerNum] == null) {
-    			players[data.playerNum] = new GameData();
-    			players[data.playerNum].lives = 3;
-    		}
-    		players[data.playerNum].playerNum = data.playerNum;
-    		players[data.playerNum].name = data.name;
-    		players[data.playerNum].character = data.character;
-    		players[data.playerNum].ready = data.ready;
-    	}
-
-    	else if (data.type.equals("gamestart")) {
-    		startGame();
-    	}
-    	// no game data should be received at this point
+                for (GameData player : players) {
+                    System.out.println(player.lives + player.name);
+                }
+            } else if (data.type.equals("player")) {
+                if (players[data.playerNum] == null) {
+                    players[data.playerNum] = new GameData();
+                    players[data.playerNum].lives = 3;
+                }
+                players[data.playerNum].playerNum = data.playerNum;
+                players[data.playerNum].name = data.name;
+                players[data.playerNum].character = data.character;
+                players[data.playerNum].ready = data.ready;
+                updatePlayerLabels();
+            } else if (data.type.equals("gamestart")) {
+                startGame();
+            }
+        });
     }
 
     private void createChat() {
         chatInput = new TextField();
-        chatInput.setLayoutX(0);
-        chatInput.setLayoutY(300);
+        chatInput.setLayoutX(611);
+        chatInput.setLayoutY(457);
+        chatInput.setPrefWidth(300);
+        chatInput.setStyle("-fx-background-color: transparent; -fx-text-fill: white;");
+
+        chatInput.setOnKeyPressed(new EventHandler<KeyEvent>() {
+            @Override
+            public void handle(KeyEvent keyEvent) {
+                if (keyEvent.getCode() == KeyCode.ENTER) {
+                    client.sendChat(chatInput.getText());
+                    chatInput.clear();
+                }
+            }
+        });
+
         chatLog = new TextArea();
-        chatLog.setLayoutX(0);
-        chatLog.setLayoutY(0);
+        chatLog.setLayoutX(608);
+        chatLog.setLayoutY(55);
+        chatLog.setPrefWidth(310);
+        chatLog.setPrefHeight(390);
+        chatLog.setStyle("-fx-background-color: transparent;");
+
         lobbyPane.getChildren().addAll(chatInput, chatLog);
+    }
+
+    private void setButtonFont(Label label) {
+    try {
+        label.setFont(Font.loadFont(getClass().getResourceAsStream("/view/resources/ArchitypeStedelijkW00.ttf"), 25));
+    } catch (NullPointerException e) {
+        label.setFont(Font.font("Verdana", 16));
+    }
+    }
+
+    private void createPlayerNameLabel() {
+        Label playerNameLabel = new Label("Player: ");
+        playerNameLabel.setStyle("-fx-font-size: 20px; -fx-text-fill: white;");
+        setButtonFont(playerNameLabel);
+        playerNameLabel.setLayoutX(10);
+        playerNameLabel.setLayoutY(10);
+        lobbyPane.getChildren().add(playerNameLabel);
+    }
+
+    private void createPlayerLabels() {
+        for (int i = 0; i < playerLabels.length; i++) {
+            playerLabels[i] = new Label();
+            playerLabels[i].setStyle("-fx-font-size: 20px; -fx-text-fill: white;");
+            setButtonFont(playerLabels[i]);
+            playerLabels[i].setLayoutX(200 + i * 200);
+            playerLabels[i].setLayoutY(10);
+            lobbyPane.getChildren().add(playerLabels[i]);
+        }
+    }
+
+    private void updatePlayerLabels() {
+        for (int i = 0; i < players.length; i++) {
+            if (players[i] != null) {
+                playerLabels[i].setText(players[i].name);
+            } else {
+                playerLabels[i].setText("Waiting...");
+            }
+        }
     }
 }
