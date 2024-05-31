@@ -16,8 +16,8 @@ This is a simple 2D JavaFX Networking Game. The game revolves around the concept
 ![Title Screen](src/view/resources/titlescreen.png)
 ### Lobby with Chat Features
 ![Lobby](src/view/resources/lobby.png)
-### Gameplay Loop
-![Gameplay]()
+### Gameplay
+![Gameplay](src/view/resources/gameplay.png)
 
 ## Members
 ### Group 5 (CMSC 137 B-4L)
