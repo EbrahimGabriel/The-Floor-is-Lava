@@ -162,9 +162,11 @@ public class GameClient {
     	// chat: [0] is msg (appended with nickname of sender)
     	// player: [0] is playerNum, [1] is nickname, [2] is character chosen
     	// game: [0] is playerNum, [1] is lives, [2] is xpos, [3] is ypos
+    	GameData data = new GameData();
+
     	String[] temp = received.split("[|]");
     	String[] info = temp[1].split(" ");
-    	GameData data = new GameData();
+
     	data.type = temp[0];
     	if (temp[0].equals("chat")) {
     		data.msg = temp[1]; // no splitting!

@@ -470,6 +470,7 @@ public class GameViewManager {
     //here, only game data should be received
     private void onMessageReceived(GameData data) {
     	if (data.type.equals("game")) {
+    		if (characters[data.playerNum] == null || players[data.playerNum] == null) return;
     		characters[data.playerNum].setLayoutX(data.xpos);
     		characters[data.playerNum].setLayoutY(data.ypos);
     		players[data.playerNum].lives = data.lives;
@@ -487,6 +488,7 @@ public class GameViewManager {
     	}
 
     	else if (data.type.equals("push")) {
+    		if (characters[data.playerNum] == null || players[data.playerNum] == null) return;
     		characters[data.playerNum].setLayoutX(data.xpos);
     		characters[data.playerNum].setLayoutY(data.ypos);
     		players[data.playerNum].xpos = data.xpos;
